@@ -1,0 +1,163 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #303030;
+    color: #ffffff;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 17px;
+    height: 100vh;
+}
+body * {
+    margin: 0;
+}
+/************** Main Header **************/
+
+#main-header {
+    background-color: #1E1E1E;
+    height: 23%;
+}
+
+#logo {
+    height: calc(100% - 48px);
+}
+
+h1.logo {
+    margin: 0px;
+    padding-top: 15px;
+    font-size: 44px;
+    font-weight: 700;
+    letter-spacing: 5px;
+    -webkit-text-stroke: 3px #892F2F;
+
+    text-align: center;
+    text-transform: uppercase;
+}
+
+h3.subtitle {
+    text-align: center;
+    margin-top: 0px;
+}
+
+/************** Navigation bar **************/
+
+header nav {
+    background-color: #781E1E;
+    text-align: center;
+    border-top: 4px solid #5B1717;
+    border-bottom: 4px solid #5B1717;
+}
+
+.main-menu {
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
+    font-size: 18px;
+    min-height: 40px;
+    line-height: 200%;
+}
+
+.main-menu > li {
+    display: inline-block;
+    padding-left: 20px;
+    padding-right: 20px;
+    border-right: 2px solid #5B1717;
+}
+
+.main-menu > li:first-child {
+    border-left: 2px solid #5B1717;
+}
+
+.main-menu li:hover {
+    background-color: #670D0D;
+}
+
+.main-menu a {
+    color: #ffffff;
+    text-decoration: none;
+    margin-bottom: 0px;
+}
+
+.main-menu a:hover {
+    color: #ffffff;
+}
+
+/************** Labels and text inputs **************/
+label {
+    display: block;
+    font-size: 14px;
+}
+
+.text-input {
+    display: block;
+    width: calc(100% - 28px);
+    max-width: 400px;
+    padding: 10px 12px;
+    accent-color: #781E1E;
+}
+
+.error-message {
+    background-color: #e55069;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+
+    max-width: 400px;
+    width: auto;
+    margin-bottom: 20px;
+
+    padding-left: 20px;
+    font-size: 12px;
+    word-wrap: break-word;
+    color: white;
+}
+
+.message {
+    padding-bottom: 5px;
+}
+/************** Check Box **************/
+.check-box {
+    accent-color: #b40000;
+}
+
+/************** Buttons **************/
+.btn {
+    width: 100px;
+    height: 38px;
+    background-color: #781E1E;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+}
+
+.btn:hover {
+    background-color: #670D0D;
+}
+
+/************** Links **************/
+a {
+    display: block;
+    margin-bottom: 20px;
+    color: red;
+    font-size: 14px;
+}
+
+a:hover {
+    color: #670D0D;
+}
+
+/************** Main Content **************/
+#main-content {
+    min-height: 62%;
+}
+
+/************** Main Footer **************/
+#main-footer {
+    background-color: #1E1E1E;
+    height: 15%;
+    clear: both;
+    text-align: center;
+}
+
+#main-footer h5 {
+    margin: 0;
+}
