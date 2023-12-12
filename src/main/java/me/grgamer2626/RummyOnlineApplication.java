@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableScheduling
 public class RummyOnlineApplication {
-
+	
 	private static ApplicationContext applicationContext;
 	
 	public static void main(String[] args) {
