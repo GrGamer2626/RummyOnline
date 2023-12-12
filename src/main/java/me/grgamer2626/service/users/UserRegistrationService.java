@@ -5,7 +5,7 @@ import me.grgamer2626.utils.dto.UserRegistrationDto;
 import org.springframework.validation.BindingResult;
 
 
-public interface UserService {
+public interface UserRegistrationService {
 	
 	User registerUser(UserRegistrationDto registrationDto);
 	

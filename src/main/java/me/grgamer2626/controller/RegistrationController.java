@@ -1,7 +1,7 @@
 package me.grgamer2626.controller;
 
 import jakarta.validation.Valid;
-import me.grgamer2626.service.users.UserService;
+import me.grgamer2626.service.users.UserRegistrationService;
 import me.grgamer2626.utils.dto.UserRegistrationDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/registration")
 public class RegistrationController {
 	
-	private final UserService userService;
+	private final UserRegistrationService userService;
 	
 	@Autowired
-	public RegistrationController(UserService userService) {
+	public RegistrationController(UserRegistrationService userService) {
 		this.userService = userService;
 	}
 	

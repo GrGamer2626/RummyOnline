@@ -12,7 +12,7 @@ public class RummyOnlineApplication {
 	private static ApplicationContext applicationContext;
 	
 	public static void main(String[] args) {
-		applicationContext =  SpringApplication.run(RummyOnlineApplication.class, args);
+		applicationContext = SpringApplication.run(RummyOnlineApplication.class, args);
 	}
 	
 	public static synchronized ApplicationContext getApplicationContext() {

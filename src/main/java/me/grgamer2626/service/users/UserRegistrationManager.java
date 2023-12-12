@@ -15,7 +15,7 @@ import java.util.List;
 
 @SuppressWarnings("unused")
 @Service()
-public class UserRegistrationManager implements UserService {
+public class UserRegistrationManager implements UserRegistrationService {
 	
 	private final UserRepository userRepository;
 	private final RoleRepository roleRepository;
