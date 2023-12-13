@@ -80,6 +80,7 @@ public final class GameTable implements Identifiable<Long> {
 	public boolean isGameStarted() {
 		return game != null;
 	}
+	
 	public Game startGame() {
 		if(isGameStarted()) return game;
 		

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+	<meta charset="UTF-8">
+	<title>Game Fan</title>
+	<meta name="description" content="Rummy Online">
+	<meta name="keywords" content="Rummy, RummyGame, Cards, CardsGame, Game, Online, Multiplayer">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<!-- CSS -->
+	<link rel="stylesheet" type="text/css" href="/css/global.css">
+	<link rel="stylesheet" type="text/css" href="/css/table.css">
+	<!-- JS -->
+	<script src="/js/dragAndDrop.js" type="text/javascript" defer></script>
+	<script src="/js/stomp.js" type="text/javascript"></script>
+
+	<script src="/js/table/utils.js" type="text/javascript"></script>
+
+	<script src="/js/table/slots.js" type="text/javascript"></script>
+
+	<script src="/js/table/takeCard.js" type="text/javascript"></script>
+	<script src="/js/table/moveCard.js" type="text/javascript"></script>
+	<script src="/js/table/replaceJoker.js" type="text/javascript"></script>
+	<script src="/js/table/throwCard.js" type="text/javascript"></script>
+	<script src="/js/table/layDown.js" type="text/javascript"></script>
+
+	<script src="/js/table/webSocketController.js" type="text/javascript"></script>
+
+</head>
+
+<body th:onload="connect()">
+	<div id="main-content">
+		<main>
+			<div id="game-board">
+				<div id="game-fields">
+					<div id="player-1">
+						<div class="sequences sequences-normal">
+							<div th:id="p1s1" class="sequence sequence-normal" data-slot="1" data-sequence="1" th:if="${player1 == null}"></div>
+							<div th:id="p1s1" class="sequence sequence-normal" data-slot="1" data-sequence="1" th:unless="${player1 == null}" >
+								<img class="card normal" alt="" th:each="card : ${player1.getSequence(1)}" th:src="${card.getImgPath()}" th:data-id="${card.getId()}"/>
+							</div>
+
+							<div th:id="p1s2" class="sequence sequence-normal" data-slot="1" data-sequence="2" th:if="${player1 == null}" ></div>
+							<div th:id="p1s2" class="sequence sequence-normal" data-slot="1" data-sequence="2" th:unless="${player1 == null}" >
+								<img class="card normal" alt="" th:each="card : ${player1.getSequence(2)}" th:src="${card.getImgPath()}" th:data-id="${card.getId()}"/>
+							</div>
+
+							<div th:id="p1s3" class="sequence sequence-normal" data-slot="1" data-sequence="3" th:if="${player1 == null}" ></div>
+							<div th:id="p1s3" class="sequence sequence-normal" data-slot="1" data-sequence="3" th:unless="${player1 == null}" >
+								<img class="card normal" alt="" th:each="card : ${player1.getSequence(3)}" th:src="${card.getImgPath()}" th:data-id="${card.getId()}"/>
+							</div>
+
+							<div th:id="p1s4" class="sequence sequence-normal" data-slot="1" data-sequence="4" th:if="${player1 == null}" ></div>
+							<div th:id="p1s4" class="sequence sequence-normal" data-slot="1" data-sequence="4" th:unless="${player1 == null}" >
+								<img class="card normal" alt="" th:each="card : ${player1.getSequence(4)}" th:src="${card.getImgPath()}" th:data-id="${card.getId()}"/>
+							</div>
+						</div>
+						<div th:id="hand-cards-1" class="hand" data-slot="1" th:if="${player1 == null}"></div>
+						<div th:id="hand-cards-1" class="hand" data-slot="1" th:unless="${player1 == null}">
+							<img th:each="iteration : ${#numbers.sequence(0, player1.handLength() - 1)}" class="card normal" alt="" src="/img/deck/back.png" />
+						</div>
+					</div>
+
+					<div id="player-2">
+						<div class="sequences sequences-normal">
+							<div th:id="p2s1" class="sequence sequence-normal" data-slot="2" data-sequence="1" th:if="${player2 == null}"></div>
+							<div th:id="p2s1" class="sequence sequence-normal" data-slot="2" data-sequence="1" th:unless="${player2 == null}">
+								<img class="card normal draggable" alt="" th:each="card : ${player2.getSequence(1)}" th:src="${card.getImgPath()}" draggable="true" th:data-id="${card.getId()}"/>
+							</div>
+
+							<div th:id="p2s2" class="sequence sequence-normal" data-slot="2" data-sequence="2" th:if="${player2 == null}"></div>
+							<div th:id="p2s2" class="sequence sequence-normal" data-slot="2" data-sequence="2" th:unless="${player2 == null}">
+								<img class="card normal draggable" alt="" th:each="card : ${player2.getSequence(2)}" th:src="${card.getImgPath()}" draggable="true" th:data-id="${card.getId()}"/>
+							</div>
+
+							<div th:id="p2s3" class="sequence sequence-normal" data-slot="2" data-sequence="3" th:if="${player2 == null}"></div>
+							<div th:id="p2s3" class="sequence sequence-normal" data-slot="2" data-sequence="3" th:unless="${player2 == null}">
+								<img class="card normal draggable" alt="" th:each="card : ${player2.getSequence(3)}" th:src="${card.getImgPath()}" draggable="true" th:data-id="${card.getId()}"/>
+							</div>
+
+							<div th:id="p2s4" class="sequence sequence-normal" data-slot="2" data-sequence="4" th:if="${player2 == null}"></div>
+							<div th:id="p2s4" class="sequence sequence-normal" data-slot="2" data-sequence="4" th:unless="${player2 == null}">
+								<img class="card normal draggable" alt="" th:each="card : ${player2.getSequence(4)}" th:src="${card.getImgPath()}" draggable="true" th:data-id="${card.getId()}"/>
+							</div>
+						</div>
+						<div th:id="hand-cards-2" class="hand" data-slot="2" th:if="${player2 == null}" ></div>
+						<div th:id="hand-cards-2" class="hand" data-slot="2" th:unless="${player2 == null}">
+							<img class="card normal" alt="" src="/img/deck/back.png" th:each="iteration : ${#numbers.sequence(0, player2.handLength() - 1)}" />
+						</div>
+					</div>
+
+					<div id="player-3">
+						<div class="sequences sequences-side">
+							<div th:id="p3s1" class="sequence sequence-left-side" data-slot="3" data-sequence="1" th:if="${player3 == null}"></div>
+							<div th:id="p3s1" class="sequence sequence-left-side" data-slot="3" data-sequence="1" th:unless="${player3 == null}">
+								<img class="card left-side draggable" alt="" th:each="card : ${player3.getSequence(1)}" th:src="${card.getImgPath()}" draggable="true" th:data-id="${card.getId()}"/>
+							</div>
+
+							<div th:id="p3s2" class="sequence sequence-left-side" data-slot="3" data-sequence="2" th:if="${player3 == null}"></div>
+							<div th:id="p3s2" class="sequence sequence-left-side" data-slot="3" data-sequence="2" th:unless="${player3 == null}">
+								<img class="card left-side draggable" alt="" th:each="card : ${player3.getSequence(2)}" th:src="${card.getImgPath()}" draggable="true" th:data-id="${card.getId()}"/>
+							</div>
+
+							<div th:id="p3s3" class="sequence sequence-left-side" data-slot="3" data-sequence="3" th:if="${player3 == null}"></div>
+							<div th:id="p3s3" class="sequence sequence-left-side" data-slot="3" data-sequence="3" th:unless="${player3 == null}">
+								<img class="card left-side draggable" alt="" th:each="card : ${player3.getSequence(3)}" th:src="${card.getImgPath()}" draggable="true" th:data-id="${card.getId()}"/>
+							</div>
+
+							<div th:id="p3s4" class="sequence sequence-left-side" data-slot="3" data-sequence="4" th:if="${player3 == null}"></div>
+							<div th:id="p3s4" class="sequence sequence-left-side" data-slot="3" data-sequence="4" th:unless="${player3 == null}">
+								<img class="card left-side draggable" alt="" th:each="card : ${player3.getSequence(4)}" th:src="${card.getImgPath()}" draggable="true" th:data-id="${card.getId()}"/>
+							</div>
+						</div>
+						<div th:id="hand-cards-3" class="hand" data-slot="3" th:if="${player3 == null}" ></div>
+						<div th:id="hand-cards-3" class="hand" data-slot="3" th:unless="${player3 == null}">
+							<img class="card left-side" alt="" src="/img/deck/back.png" th:each="iteration : ${#numbers.sequence(0, player3.handLength() - 1)}"/>
+						</div>
+					</div>
+
+					<div id="player-4">
+						<div class="sequences sequences-normal">
+							<div th:id="p4s1" class="sequence sequence-upside-down" data-slot="4" data-sequence="1" th:if="${player4 == null}"></div>
+							<div th:id="p4s1" class="sequence sequence-upside-down" data-slot="4" data-sequence="1" th:unless="${player4 == null}">
+								<img class="card upside-down draggable" alt="" th:each="card : ${player4.getSequence(1)}" th:src="${card.getImgPath()}" draggable="true" th:data-id="${card.getId()}"/>
+							</div>
+
+							<div th:id="p4s2" class="sequence sequence-upside-down" data-slot="4" data-sequence="2" th:if="${player4 == null}"></div>
+							<div th:id="p4s2" class="sequence sequence-upside-down" data-slot="4" data-sequence="2" th:unless="${player4 == null}">
+								<img class="card upside-down draggable" alt="" th:each="card : ${player4.getSequence(2)}" th:src="${card.getImgPath()}" draggable="true" th:data-id="${card.getId()}"/>
+							</div>
+
+							<div th:id="p4s3" class="sequence sequence-upside-down" data-slot="4" data-sequence="3" th:if="${player4 == null}"></div>
+							<div th:id="p4s3" class="sequence sequence-upside-down" data-slot="4" data-sequence="3" th:unless="${player4 == null}">
+								<img class="card upside-down draggable" alt="" th:each="card : ${player4.getSequence(3)}" th:src="${card.getImgPath()}" draggable="true" th:data-id="${card.getId()}"/>
+							</div>
+
+							<div th:id="p4s4" class="sequence sequence-upside-down" data-slot="4" data-sequence="4" th:if="${player4 == null}"></div>
+							<div th:id="p4s4" class="sequence sequence-upside-down" data-slot="4" data-sequence="4" th:unless="${player4 == null}">
+								<img class="card upside-down draggable" alt="" th:each="card : ${player4.getSequence(4)}" th:src="${card.getImgPath()}" draggable="true" th:data-id="${card.getId()}"/>
+							</div>
+						</div>
+						<div th:id="hand-cards-4" class="hand" data-slot="4" th:if="${player4 == null}"></div>
+						<div th:id="hand-cards-4" class="hand" data-slot="4" th:unless="${player4 == null}">
+							<img class="card upside-down" alt="" src="/img/deck/back.png" th:each="iteration : ${#numbers.sequence(0, player4.handLength() - 1)}" />
+						</div>
+					</div>
+
+					<div id="player-5">
+						<div class="sequences sequences-normal">
+							<div th:id="p5s1" class="sequence sequence-upside-down" data-slot="5" data-sequence="1" th:if="${player5 == null}"></div>
+							<div th:id="p5s1" class="sequence sequence-upside-down" data-slot="5" data-sequence="1" th:unless="${player5 == null}">
+								<img class="card upside-down draggable" alt="" th:each="card : ${player5.getSequence(1)}" th:src="${card.getImgPath()}" draggable="true" th:data-id="${card.getId()}"/>
+							</div>
+
+							<div th:id="p5s2" class="sequence sequence-upside-down" data-slot="5" data-sequence="2" th:if="${player5 == null}"></div>
+							<div th:id="p5s2" class="sequence sequence-upside-down" data-slot="5" data-sequence="2" th:unless="${player5 == null}">
+								<img class="card upside-down draggable" alt="" th:each="card : ${player5.getSequence(2)}" th:src="${card.getImgPath()}" draggable="true" th:data-id="${card.getId()}"/>
+							</div>
+
+							<div th:id="p5s3" class="sequence sequence-upside-down" data-slot="5" data-sequence="3" th:if="${player5 == null}"></div>
+							<div th:id="p5s3" class="sequence sequence-upside-down" data-slot="5" data-sequence="3" th:unless="${player5 == null}">
+								<img class="card upside-down draggable" alt="" th:each="card : ${player5.getSequence(3)}" th:src="${card.getImgPath()}" draggable="true" th:data-id="${card.getId()}"/>
+							</div>
+
+							<div th:id="p5s4" class="sequence sequence-upside-down" data-slot="5" data-sequence="4" th:if="${player5 == null}"></div>
+							<div th:id="p5s4" class="sequence sequence-upside-down" data-slot="5" data-sequence="4" th:unless="${player5 == null}">
+								<img class="card upside-down draggable" alt="" th:each="card : ${player5.getSequence(4)}" th:src="${card.getImgPath()}" draggable="true" th:data-id="${card.getId()}"/>
+							</div>
+
+						</div>
+						<div th:id="hand-cards-5" class="hand" data-slot="5" th:if="${player5 == null}"></div>
+						<div th:id="hand-cards-5" class="hand" data-slot="5" th:unless="${player5 == null}">
+							<img class="card upside-down" alt="" src="/img/deck/back.png" th:each="iteration : ${#numbers.sequence(0, player5.handLength() - 1)}"/>
+						</div>
+					</div>
+
+					<div id="player-6">
+						<div class="sequences sequences-side">
+							<div th:id="p6s1" class="sequence sequence-right-side" data-slot="6" data-sequence="1" th:if="${player6 == null}"></div>
+							<div th:id="p6s1" class="sequence sequence-right-side" data-slot="6" data-sequence="1" th:unless="${player6 == null}">
+								<img class="card right-side draggable" alt="" th:each="card : ${player6.getSequence(1)}" th:src="${card.getImgPath()}" draggable="true" th:data-id="${card.getId()}"/>
+							</div>
+
+							<div th:id="p6s2" class="sequence sequence-right-side" data-slot="6" data-sequence="2" th:if="${player6 == null}" ></div>
+							<div th:id="p6s2" class="sequence sequence-right-side" data-slot="6" data-sequence="2" th:unless="${player6 == null}">
+								<img class="card right-side draggable" alt="" th:each="card : ${player6.getSequence(2)}" th:src="${card.getImgPath()}" draggable="true" th:data-id="${card.getId()}"/>
+							</div>
+
+							<div th:id="p6s3" class="sequence sequence-right-side" data-slot="6" data-sequence="3" th:if="${player6 == null}" ></div>
+							<div th:id="p6s3" class="sequence sequence-right-side" data-slot="6" data-sequence="3" th:unless="${player6 == null}" >
+								<img class="card right-side draggable" alt="" th:each="card : ${player6.getSequence(3)}" th:src="${card.getImgPath()}" draggable="true" th:data-id="${card.getId()}"/>
+							</div>
+
+							<div th:id="p6s4" class="sequence sequence-right-side" data-slot="6" data-sequence="4" th:if="${player6 == null}" ></div>
+							<div th:id="p6s4" class="sequence sequence-right-side" data-slot="6" data-sequence="4" th:unless="${player6 == null}" >
+								<img class="card right-side draggable" alt="" th:each="card : ${player6.getSequence(4)}" th:src="${card.getImgPath()}" draggable="true" th:data-id="${card.getId()}"/>
+							</div>
+						</div>
+						<div th:id="hand-cards-6" class="hand" data-slot="6" th:if="${player6 == null}"></div>
+						<div th:id="hand-cards-6" class="hand" data-slot="6" th:unless="${player6 == null}">
+							<img class="card right-side" alt="" src="/img/deck/back.png" th:each="iteration : ${#numbers.sequence(0, player6.handLength() - 1)}"/>
+						</div>
+					</div>
+
+					<div id="thrown-card">
+						<div id="thrown-card-container" class="droppable">
+							<img class="card" th:if="${thrownCard != null}" th:src="${thrownCard.getImgPath()}" th:data-id="${thrownCard.getId()}"/>
+						</div>
+					</div>
+				</div>
+				<!----------------------------------- Popup ----------------------------------->
+				<div id="waiting" th:class="${isGameStarted} ? 'popup' : 'popup popup-visible'">
+					<div class="popup-inside">
+						<h5>Waiting for players</h5>
+					</div>
+				</div>
+
+				<div id="starting-countdown" class="popup">
+					<div class="popup-inside">
+						<h5>Game start in: <span id="time"></span></h5>
+					</div>
+				</div>
+
+				<div id="joker-figure" class="popup">
+
+					<div class="popup-inside popup-joker-inside">
+						<h5>What card is this Joker</h5>
+						<div id="buttons">
+							<button class="btn" onclick="setJokerValue('_2')">2</button>
+							<button class="btn" onclick="setJokerValue('_3')">3</button>
+							<button class="btn" onclick="setJokerValue('_4')">4</button>
+							<button class="btn" onclick="setJokerValue('_5')">5</button>
+							<button class="btn" onclick="setJokerValue('_6')">6</button>
+							<button class="btn" onclick="setJokerValue('_7')">7</button>
+							<button class="btn" onclick="setJokerValue('_8')">8</button>
+							<button class="btn" onclick="setJokerValue('_9')">9</button>
+							<button class="btn" onclick="setJokerValue('_10')">10</button>
+							<button class="btn" onclick="setJokerValue('JACK')">Jack</button>
+							<button class="btn" onclick="setJokerValue('QUEEN')">Queen</button>
+							<button class="btn" onclick="setJokerValue('KING')">King</button>
+							<button class="btn" onclick="setJokerValue('ACE')">Ace</button>
+						</div>
+					</div>
+				</div>
+
+			</div>
+			<!----------------------------------- Game Controllers ----------------------------------->
+			<aside id="game-controllers">
+				<nav>
+					<h3>Table #<span id="tableId" th:text="${tableId}"></span></h3>
+					<button id="exit-btn" class="btn">X</button>
+				</nav>
+				<div id="player-slots">
+					<div id="player-slot-1" class="player-slot">
+						<div class="slot-label">#1</div>
+
+						<button th:if="${player1 == null}" class="slot-btn" onclick="takeSlot(1)">Empty</button>
+						<div th:unless="${player1 == null}" class="taken-slot">  <h5 th:text="${player1.getName()}"></h5>  </div>
+					</div>
+
+					<div id="player-slot-2" class="player-slot">
+						<div class="slot-label">#2</div>
+
+						<button th:if="${player2 == null}" class="slot-btn" onclick="takeSlot(2)">Empty</button>
+						<div th:unless="${player2 == null}" class="taken-slot">  <h5 th:text="${player2.getName()}"></h5>  </div>
+					</div>
+
+					<div id="player-slot-3" class="player-slot">
+						<div class="slot-label">#3</div>
+						<button th:if="${player3 == null}" class="slot-btn" onclick="takeSlot(3)">Empty</button>
+						<div th:unless="${player3 == null}" class="taken-slot">  <h5 th:text="${player3.getName()}"></h5>  </div>
+					</div>
+
+					<div id="player-slot-4" class="player-slot">
+						<div class="slot-label">#4</div>
+
+						<button th:if="${player4 == null}" class="slot-btn" onclick="takeSlot(4)">Empty</button>
+						<div th:unless="${player4 == null}" class="taken-slot">  <h5 th:text="${player4.getName()}"></h5>  </div>
+					</div>
+
+					<div id="player-slot-5" class="player-slot">
+						<div class="slot-label">#5</div>
+
+						<button th:if="${player5 == null}" class="slot-btn" onclick="takeSlot(5)">Empty</button>
+						<div th:unless="${player5 == null}" class="taken-slot">  <h5 th:text="${player5.getName()}"></h5>  </div>
+					</div>
+
+					<div id="player-slot-6" class="player-slot">
+						<div class="slot-label">#6</div>
+
+						<button th:if="${player6 == null}" class="slot-btn" onclick="takeSlot(6)">Empty</button>
+						<div th:unless="${player6 == null}" class="taken-slot">  <h5 th:text="${player6.getName()}"></h5>  </div>
+					</div>
+				</div>
+				<div id="info">
+					<h5></h5>
+				</div>
+				<div id="controllers"></div>
+			</aside>
+
+
+
+		</main>
+	</div>
+
+</body>
+</html>
