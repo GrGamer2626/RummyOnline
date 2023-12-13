@@ -4,6 +4,7 @@ import me.grgamer2626.model.tables.GameTable;
 import me.grgamer2626.model.tables.TablesRepository;
 import me.grgamer2626.model.users.User;
 import me.grgamer2626.utils.memoryRepository.exceptions.RepositoryException;
+import me.grgamer2626.utils.scheduler.Scheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,10 +17,12 @@ public class LobbyManager implements LobbyService {
 	
 	private final Queue<Long> unusedId;
 	private final TablesRepository tablesRepository;
+	private final Scheduler scheduler;
 	
 	@Autowired
-	public LobbyManager(TablesRepository tablesRepository) {
+	public LobbyManager(TablesRepository tablesRepository, Scheduler scheduler) {
 		this.tablesRepository = tablesRepository;
+		this.scheduler = scheduler;
 		this.unusedId = new PriorityQueue<>();
 	}
 	
@@ -41,7 +44,7 @@ public class LobbyManager implements LobbyService {
 	}
 	
 	private GameTable createTable(long id, User user) throws RepositoryException {
-		return tablesRepository.save(new GameTable(id, user));
+		return tablesRepository.save(new GameTable(id, user, scheduler));
 	}
 	@Override
 	public GameTable getTable(long id) {
