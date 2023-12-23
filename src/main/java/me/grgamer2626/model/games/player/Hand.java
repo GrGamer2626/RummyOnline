@@ -12,9 +12,14 @@ import java.util.Comparator;
 public final class Hand extends ArrayList<Card> implements GameCollection {
 	
 	private final Player owner;
+	private final int number;
+	private final int slot;
 	
 	public Hand(Player owner) {
 		this.owner = owner;
+		this.slot = owner.getSlot();
+		number = -1;
+		
 		sort();
 	}
 	
@@ -48,6 +53,16 @@ public final class Hand extends ArrayList<Card> implements GameCollection {
 	@Override
 	public Player getOwner() {
 		return owner;
+	}
+	
+	@Override
+	public int getNumber() {
+		return number;
+	}
+	
+	@Override
+	public int getSlot() {
+		return slot;
 	}
 	
 	@Override

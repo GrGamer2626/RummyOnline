@@ -15,12 +15,14 @@ public final class Sequence extends ArrayList<Card> implements GameCollection {
 	
 	private final Player owner;
 	private final int number;
+	private final int slot;
 	private SequenceType type;
 	private int sequenceValue;
 	
 	public Sequence(int number, Player owner) {
-		this.number = number;
 		this.owner = owner;
+		this.number = number;
+		this.slot = owner.getSlot();
 		sequenceValue = 0;
 		sort();
 	}
@@ -58,8 +60,14 @@ public final class Sequence extends ArrayList<Card> implements GameCollection {
 		return owner;
 	}
 	
+	@Override
 	public int getNumber() {
 		return number;
+	}
+	
+	@Override
+	public int getSlot() {
+		return slot;
 	}
 	
 	public int getSequenceValue() {
@@ -73,11 +81,11 @@ public final class Sequence extends ArrayList<Card> implements GameCollection {
 		boolean added = super.add(card);
 		if(added) {
 			sort();
-			sequenceValue += card.getValue();
 			
 			if(size() >= 3) {
 				setType();
 			}
+			sequenceValue += card.getValue();
 		}
 		return added;
 	}
@@ -88,13 +96,13 @@ public final class Sequence extends ArrayList<Card> implements GameCollection {
 		
 		super.add(index, card);
 		sort();
-		sequenceValue += card.getValue();
 		
 		type = null;
 		
 		if(size() >= 3) {
 			setType();
 		}
+		sequenceValue += card.getValue();
 	}
 	
 	@Override
@@ -106,14 +114,14 @@ public final class Sequence extends ArrayList<Card> implements GameCollection {
 		boolean added = super.addAll(cards);
 		if(added) {
 			sort();
-			for(Card card : cards) {
-				sequenceValue += card.getValue();
-			}
 			
 			type = null;
 			
 			if(size() >= 3) {
 				setType();
+			}
+			for(Card card : cards) {
+				sequenceValue += card.getValue();
 			}
 		}
 		return added;
@@ -128,14 +136,14 @@ public final class Sequence extends ArrayList<Card> implements GameCollection {
 		boolean added = super.addAll(index, cards);
 		if(added) {
 			sort();
-			for(Card card : cards) {
-				sequenceValue += card.getValue();
-			}
 			
 			type = null;
 			
 			if(size() >= 3) {
 				setType();
+			}
+			for(Card card : cards) {
+				sequenceValue += card.getValue();
 			}
 		}
 		
@@ -146,13 +154,12 @@ public final class Sequence extends ArrayList<Card> implements GameCollection {
 	public Card remove(int index) {
 		Card card = super.remove(index);
 		
-		sequenceValue -= card.getValue();
-		
 		type = null;
 		
 		if(size() >= 3) {
 			setType();
 		}
+		sequenceValue -= card.getValue();
 		
 		return card;
 	}
@@ -164,12 +171,12 @@ public final class Sequence extends ArrayList<Card> implements GameCollection {
 		boolean removed = super.remove(card);
 		if(removed) {
 			
-			sequenceValue -= ((Card)card).getValue();
 			type = null;
 			
 			if(size() >= 3) {
 				setType();
 			}
+			sequenceValue -= ((Card)card).getValue();
 		}
 		
 		return removed;

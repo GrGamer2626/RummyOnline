@@ -25,6 +25,24 @@ public interface GameCollection extends List<Card> {
 	 */
 	Player getOwner();
 	
+	
+	/**
+	 * Every GameCollection has its individual number works like id.
+	 * <p>
+	 * If the GameCollection is stored in the map, the collection number corresponds to
+	 * the key in the map. Otherwise, it value is -1.
+	 *
+	 * @return number of the GameCollection
+	 */
+	int getNumber();
+	
+	/**
+	 * Returns the slot number of the player to which this collection belongs.
+	 *
+	 * @return slot number
+	 */
+	int getSlot();
+	
 	/**
 	 * Returns the card at the specified position in this collection and remove it from them.
 	 *
