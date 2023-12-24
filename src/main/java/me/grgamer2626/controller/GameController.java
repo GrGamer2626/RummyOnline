@@ -9,6 +9,7 @@ import me.grgamer2626.service.games.GameService;
 import me.grgamer2626.service.websocket.WebSocketService;
 import me.grgamer2626.utils.dto.CardDto;
 import me.grgamer2626.utils.dto.LayDownDto;
+import me.grgamer2626.utils.dto.ReturnCardDto;
 import me.grgamer2626.utils.dto.moveCard.MoveCardDto;
 import me.grgamer2626.utils.dto.moveCard.MoveCardInputDto;
 import me.grgamer2626.utils.dto.moveCard.ReplaceJokerDto;
@@ -17,12 +18,12 @@ import me.grgamer2626.utils.dto.takeCard.TakeFromStackDto;
 import me.grgamer2626.utils.dto.throwCardDto.ThrowCardDto;
 import me.grgamer2626.utils.dto.throwCardDto.ThrowCardInputDto;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.handler.annotation.*;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.annotation.SendToUser;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.security.Principal;
 import java.util.List;
@@ -108,7 +109,7 @@ public class GameController {
 	}
 	
 	private TakeCardDto takeFromDeck(long tableId, int playerSlot, Card card) {
-		TakeCardDto dto = gameService.takeFromDeck(tableId, playerSlot, card);
+		TakeCardDto dto = gameService.createTakeCardDto(tableId, playerSlot, card);
 		
 		Player player =  gameService.getGame(tableId).getPlayer(playerSlot);
 		player.setPhase(TurnPhases.MOVE_CARDS);
@@ -128,7 +129,7 @@ public class GameController {
 		if(takenCard == null) return null;
 		
 		Game game = gameService.getGame(tableId);
-		int slot = gameService.getGame(tableId).getPlayerSlots().getByName(playerName).getSlot();
+		int slot = game.getPlayerSlots().getByName(playerName).getSlot();
 		
 		takeFromStack(tableId, slot, takenCard);
 		
@@ -139,14 +140,14 @@ public class GameController {
 	
 	
 	private TakeCardDto takeFromStack(long tableId, int playerSlot, Card takenCard) {
-		TakeCardDto dto = gameService.takeFromDeck(tableId, playerSlot, takenCard);
+		TakeCardDto dto = gameService.createTakeCardDto(tableId, playerSlot, takenCard);
 		
 		Player player =  gameService.getGame(tableId).getPlayer(playerSlot);
 		
 		player.setCardIdTakenFromStack(takenCard.getId());
 		player.setPhase(TurnPhases.CARD_TAKEN_FROM_STACK);
 		
-		String destination = "/topic/table/" + tableId + "/slot/" + playerSlot + "/takeFromDeck";
+		String destination = "/topic/table/" + tableId + "/slot/" + playerSlot + "/takeFromStack";
 		webSocketService.sendToUser(player.getName(), destination, dto);
 		
 		return dto;
@@ -154,22 +155,56 @@ public class GameController {
 	
 	
 	@MessageMapping("/rummy/table/{tableId}/confirmTakenCard")
-	@SendToUser("/topic/table/{tableId}/confirmTakenCard")
-	public void confirmTakenCard(@DestinationVariable long tableId, @Payload int currentSlot, Principal principal) {
+//	@SendToUser("/topic/table/{tableId}/slot/{playerSlot}/confirmTakenCard")
+	public CardDto confirmTakenCard(@DestinationVariable long tableId, @Payload int currentSlot, Principal principal) {
 		String playerName = principal.getName();
+		
+		CardDto dto = gameService.confirmTakenCard(tableId, playerName);
+		if(dto == null) return null;
+		
+		Player player = gameService.getGame(tableId).getPlayerSlots().getByName(playerName);
+		player.setPhase(TurnPhases.MOVE_CARDS);
+		int playerSlot = player.getSlot();
+		
+		
+		String destination = "/topic/table/" + tableId + "/slot/" + playerSlot + "/confirmTakenCard";
+		webSocketService.sendToUser(playerName, destination, dto);
+		return dto;
+	}
+	
+	@MessageMapping("/rummy/table/{tableId}/returnCard")
+	@SendTo("/topic/table/{tableId}/returnCard")
+	public ReturnCardDto returnCartFromStack(@DestinationVariable long tableId, @Payload int currentSlot, Principal principal) {
+		String playerName = principal.getName();
+		
+		ReturnCardDto dto =  gameService.returnCardFromStack(tableId, playerName);
+		if(dto == null) return null;
+		
 		Game game = gameService.getGame(tableId);
-		
-		PlayerSlots playerSlots = game.getPlayerSlots();
-		Player player = playerSlots.getByName(playerName);
+		Player player = game.getPlayerSlots().getByName(playerName);
 		
 		
+		Card card = game.takeFromDeck();
+		player.takeCard(card);
+		
+		returnCardFromStack(tableId, player.getSlot(), card);
 		
 		
+		return dto;
 	}
 	
 	
-	
-	
+	public TakeCardDto returnCardFromStack(long tableId, int playerSlot, Card card) {
+		TakeCardDto dto = gameService.createTakeCardDto(tableId, playerSlot, card);
+		
+		Player player =  gameService.getGame(tableId).getPlayer(playerSlot);
+		player.setPhase(TurnPhases.MOVE_CARDS);
+		
+		String destination = "/topic/table/" + tableId + "/slot/" + playerSlot + "/returnCard";
+		webSocketService.sendToUser(player.getName(), destination, dto);
+		
+		return dto;
+	}
 	
 	
 	//*********************** Move Card ***********************//
@@ -266,6 +301,7 @@ public class GameController {
 		
 		return dto;
 	}
+
 	private ThrowCardInputDto throwCard(long tableId,  int slot, ThrowCardInputDto throwCardDto) {
 		Player player = gameService.getGame(tableId).getPlayer(slot);
 		
@@ -275,10 +311,7 @@ public class GameController {
 		return throwCardDto;
 	}
 	
-	
-	
 	//*********************** Lay Down ***********************//
-	
 	@MessageMapping("/rummy/table/{tableId}/layDown")
 	@SendTo("/topic/table/{tableId}/layDown")
 	public LayDownDto layDown(@DestinationVariable long tableId, @Payload int currentSlot, Principal principal) {
@@ -294,6 +327,7 @@ public class GameController {
 		
 		return dto;
 	}
+
 	public Map<Integer, Boolean> layDown(long tableId, int slot) {
 		Map<Integer, Boolean> map = gameService.layDown(tableId);
 		

@@ -6,6 +6,8 @@ import me.grgamer2626.model.games.cards.Card;
 import me.grgamer2626.model.games.cards.Joker;
 import me.grgamer2626.model.games.cards.utils.Colors;
 import me.grgamer2626.model.games.cards.utils.Figures;
+import me.grgamer2626.model.games.decks.Deck;
+import me.grgamer2626.model.games.player.Hand;
 import me.grgamer2626.model.games.player.Player;
 import me.grgamer2626.model.games.player.sequences.Sequence;
 import me.grgamer2626.model.tables.PlayerSlots;
@@ -14,6 +16,7 @@ import me.grgamer2626.service.websocket.WebSocketService;
 import me.grgamer2626.utils.GameCollection;
 import me.grgamer2626.utils.dto.CardDto;
 import me.grgamer2626.utils.dto.LayDownDto;
+import me.grgamer2626.utils.dto.ReturnCardDto;
 import me.grgamer2626.utils.dto.moveCard.*;
 import me.grgamer2626.utils.dto.takeCard.TakeCardDto;
 import me.grgamer2626.utils.dto.throwCardDto.ThrowCardDto;
@@ -22,6 +25,7 @@ import me.grgamer2626.utils.dto.throwCardDto.ThrowCardOutputDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,11 +74,13 @@ public class GameManager implements GameService {
 	public Card takeFromDeck(long tableId, String playerName) {
 		Game game = getGame(tableId);
 		
+		resetDeck(tableId);
+		
 		PlayerSlots playerSlots = game.getPlayerSlots();
 		Player player = playerSlots.getByName(playerName);
-		int slot = player.getSlot();
+		int playerSlot = player.getSlot();
 		
-		if(slot != game.getCurrentTurnPlayer() || player.getPhase() != TurnPhases.TAKE_CARD) return null;
+		if(playerSlot != game.getCurrentTurnPlayer() || player.getPhase() != TurnPhases.TAKE_CARD) return null;
 		
 		Card card = game.takeFromDeck();
 		player.takeCard(card);
@@ -99,7 +105,7 @@ public class GameManager implements GameService {
 	}
 	
 	@Override
-	public TakeCardDto takeFromDeck(long tableId, int slot, Card card) {
+	public TakeCardDto createTakeCardDto(long tableId, int slot, Card card) {
 		Game game = getGame(tableId);
 		PlayerSlots playerSlots = game.getPlayerSlots();
 		
@@ -110,37 +116,102 @@ public class GameManager implements GameService {
 		return new TakeCardDto(cardDto, position, layDownPlayers);
 	}
 	
+	
 	@Override
-	public void confirmTakenCard(long tableId, String playerName) {
+	public CardDto confirmTakenCard(long tableId, String playerName) {
 		Game game = getGame(tableId);
 		PlayerSlots playerSlots = game.getPlayerSlots();
 		
 		Player player = playerSlots.getByName(playerName);
 		int playerSlot = player.getSlot();
 		
-		if(playerSlot != game.getCurrentTurnPlayer() || player.getPhase() != TurnPhases.CARD_TAKEN_FROM_STACK) return;
+		if(playerSlot != game.getCurrentTurnPlayer() || player.getPhase() != TurnPhases.CARD_TAKEN_FROM_STACK) return null;
 		
 		int cardId = player.getCardIdTakenFromStack();
 		
-		
 		boolean containsCard = false;
 		Card card = null;
+		
 		for(Player otherPlayer : playerSlots.getNonNull()) {
 			if(!otherPlayer.isLayDown()) continue;
 			
 			for(Sequence sequence : otherPlayer.getSequences().values()) {
-				if(!sequence.isSequenceCorrect()) return;
+				if(!sequence.isSequenceCorrect()) return null;
 				
-				if (sequence.containId(cardId)) {
+				if(sequence.containId(cardId)) {
 					containsCard = true;
 					card = sequence.getById(cardId);
 				}
 			}
 		}
+		if(!containsCard) return null;
 		
+		card.setMovable(false);
 		
-		
+		return new CardDto(card.getId(), card.getImgPath());
 	}
+	
+	@Override
+	public ReturnCardDto returnCardFromStack(long tableId, String playerName) {
+		Game game = getGame(tableId);
+		
+		resetDeck(tableId);
+		
+		PlayerSlots playerSlots = game.getPlayerSlots();
+		
+		Player player = playerSlots.getByName(playerName);
+		int playerSlot = player.getSlot();
+		
+		if(playerSlot != game.getCurrentTurnPlayer() || player.getPhase() != TurnPhases.CARD_TAKEN_FROM_STACK) return null;
+		
+		int cardId = player.getCardIdTakenFromStack();
+		Card cardFromStack = null;
+		GameCollection collection = null;
+		
+		for(Player otherPlayer : playerSlots.getNonNull()) {
+			if(!otherPlayer.isLayDown()) continue;
+			
+			if(player.equals(otherPlayer)) {
+				Hand hand = otherPlayer.getOnHand();
+				if(hand.containId(cardId)) {
+					cardFromStack = hand.getById(cardId);
+					collection = hand;
+					break;
+				}
+			}
+			
+			for(Sequence sequence : otherPlayer.getSequences().values()) {
+				if(sequence.containId(cardId)) {
+					cardFromStack = sequence.getById(cardId);
+					collection = sequence;
+					break;
+				}
+			}
+		}
+		if (collection == null || cardFromStack == null) return null;
+		
+		collection.moveTo(cardId, game.getStack());
+		
+		CardDto cardDto = new CardDto(cardFromStack.getId(), cardFromStack.getImgPath());
+		return new ReturnCardDto(playerSlot, cardDto, collection.getNumber(), collection.getSlot());
+	}
+	
+	private void resetDeck(long tableId) {
+		Game game = getGame(tableId);
+		
+		Deck deck = game.getDeck();
+		
+		if(deck.isEmpty()) {
+			Deque<Card> stack = game.getStack();
+			Card lastAdded = stack.pollLast();
+			
+			deck.addAll(game.getStack());
+			deck.shuffle();
+			
+			stack.clear();
+			stack.add(lastAdded);
+		}
+ 	}
 	
 	@Override
 	public MoveCardDto moveCard(long tableId, String playerName, MoveCardInputDto moveCardDto) {
@@ -149,8 +220,8 @@ public class GameManager implements GameService {
 		Player player = game.getPlayerSlots().getByName(playerName);
 		int playerSlot = player.getSlot();
 		
-		if(playerSlot != game.getCurrentTurnPlayer() || player.getPhase() != TurnPhases.MOVE_CARDS || player.getPhase() != TurnPhases.CARD_TAKEN_FROM_STACK) return null;
-		
+		if(playerSlot != game.getCurrentTurnPlayer() || (player.getPhase() != TurnPhases.MOVE_CARDS && player.getPhase() != TurnPhases.CARD_TAKEN_FROM_STACK)) return null;
+
 		int cardId = moveCardDto.getCardId();
 		Figures figure = moveCardDto.getFigure();
 		
@@ -164,13 +235,14 @@ public class GameManager implements GameService {
 		Card card = tryMoveCard(cardId, figure, source, destination);
 		if(card == null) return null;
 		
+		
 		if(player.isLayDown()) {
 			int position = destination.indexOf(card);
 			CardDto cardDto = new CardDto(card.getId(), card.getImgPath());
 			
 			return new MoveCardLayDownDto(cardDto, position, moveCardDto);
-			
 		}
+		
 		return new MoveCardDto(playerSlot, moveCardDto.getSourceSlot(), moveCardDto.getSourceNumber(), moveCardDto.getDestinationSlot(), moveCardDto.getDestinationNumber());
 	}
 	

@@ -103,7 +103,9 @@ public class Player {
 		boolean anyClearSequence = false;
 		
 		for (Sequence sequence : sequences.values()) {
-			total += sequence.getSequenceValue();
+			int sequenceVal = sequence.getSequenceValue();
+			total += sequenceVal;
+			
 			if (!sequence.isSequenceCorrect()) {
 				return false;
 			}

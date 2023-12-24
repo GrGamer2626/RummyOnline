@@ -4,12 +4,13 @@ import me.grgamer2626.model.games.cards.Card;
 import me.grgamer2626.model.games.decks.Deck;
 import me.grgamer2626.model.games.player.Player;
 import me.grgamer2626.model.tables.PlayerSlots;
+import me.grgamer2626.utils.Identifiable;
 
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Random;
 
-public class Game {
+public final class Game implements Identifiable<Long> {
 	
 	private final long id;
 	private boolean paused = false;
@@ -29,6 +30,11 @@ public class Game {
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	@Override
+	public Long getId() {
+		return id;
+	}
 	
 	private void dealCards() {
 		for(int i = 1 ; i <= 13; i++) {
@@ -85,6 +91,10 @@ public class Game {
 	
 	public Card peekFromStack() {
 		return stack.peekLast();
+	}
+	
+	public Deck getDeck() {
+		return deck;
 	}
 	
 	public PlayerSlots getPlayerSlots() {
