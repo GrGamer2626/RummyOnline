@@ -35,7 +35,7 @@ public class SecurityConfig {
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	@Bean
-	public SecurityFilterChain SecurityFilterChain(HttpSecurity http) throws Exception {
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests(requests -> (requests
 						.requestMatchers(permitAll).permitAll()
 						.requestMatchers("/admin").hasAnyRole("ADMIN")
@@ -47,6 +47,8 @@ public class SecurityConfig {
 						.defaultSuccessUrl("/lobby")
 						.usernameParameter("nickName")
 						.passwordParameter("password"))
+				
+				.logout(logout-> logout.logoutSuccessUrl("/"))
 				
 				.httpBasic(Customizer.withDefaults());
 		

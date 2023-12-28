@@ -23,22 +23,31 @@
 		</div>
 		<div class="side" id="rightSide">
 			<main>
-				<form th:action="@{/login}" method="post">
-					<fieldset id="login-field">
-						<h3 id="login-header">Login</h3>
-
-						<label>Nick Name <input id="nickName" class="text-input" type="text" name="nickName" placeholder="nick name" required=""/></label>
-
-						<label>Password	<input id="password" class="text-input" type="password" name="password" placeholder="password" required=""/></label>
-
-						<div id="submit-btn-container"><input class="btn" type="submit" value="Login"/> </div>
-
-						<div><a href="/registration">Register</a></div>
-
-						<div><a href="/forget-password">Forget password?</a></div>
-
+				<th:block th:if="${logged}">
+					<fieldset th:id="login-field">
+						<div th:id="submit-btn-container"><a href="/lobby" class="btn">Go to Lobby</a></div>
 					</fieldset>
-				</form>
+
+				</th:block>
+
+				<th:block th:unless="${logged}">
+					<form th:action="@{/login}" method="post">
+						<fieldset th:id="login-field">
+							<h3 id="login-header">Login</h3>
+
+							<label>Nick Name <input id="nickName" class="text-input" type="text" name="nickName" placeholder="nick name" required=""/></label>
+
+							<label>Password	<input id="password" class="text-input" type="password" name="password" placeholder="password" required=""/></label>
+
+							<div th:id="submit-btn-container"><input class="btn" type="submit" value="Login"/> </div>
+
+							<div><a href="/registration">Register</a></div>
+
+							<div><a href="/forget-password">Forget password?</a></div>
+
+						</fieldset>
+					</form>
+				</th:block>
 			</main>
 		</div>
 	</div>
