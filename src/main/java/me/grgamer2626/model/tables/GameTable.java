@@ -93,6 +93,14 @@ public final class GameTable implements Identifiable<Long> {
 		return game;
 	}
 	
+	public Game endGame() {
+		if(!isGameStarted()) return null;
+		Game temp = game;
+		game = null;
+		
+		return temp;
+	}
+	
 	
 	public void startStartingCountDown(WebSocketService webSocketService, TableService tableService) {
 		long duration = 10_000L;

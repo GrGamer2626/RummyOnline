@@ -3,6 +3,7 @@ package me.grgamer2626.model.games;
 import me.grgamer2626.model.games.cards.Card;
 import me.grgamer2626.model.games.decks.Deck;
 import me.grgamer2626.model.games.player.Player;
+import me.grgamer2626.model.games.player.sequences.Sequence;
 import me.grgamer2626.model.tables.PlayerSlots;
 import me.grgamer2626.utils.Identifiable;
 
@@ -25,6 +26,13 @@ public final class Game implements Identifiable<Long> {
 		this.stack = new LinkedList<>();
 		
 		this.playerSlots = playerSlots;
+		
+		for(Player player : playerSlots.getNonNull()) {
+			player.getOnHand().clear();
+			player.getSequences().values().forEach(Sequence::clear);
+			player.setLayDown(false);
+		}
+		
 		currentTurnPlayer = whoStartGame(lastGameSlotStart);
 		dealCards();
 	}

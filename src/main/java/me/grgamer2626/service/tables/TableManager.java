@@ -1,7 +1,10 @@
 package me.grgamer2626.service.tables;
 
+import me.grgamer2626.model.games.player.Hand;
 import me.grgamer2626.model.games.player.Player;
+import me.grgamer2626.model.games.player.sequences.Sequence;
 import me.grgamer2626.model.tables.GameTable;
+import me.grgamer2626.model.tables.PlayerSlots;
 import me.grgamer2626.model.tables.TablesRepository;
 import me.grgamer2626.model.users.User;
 import me.grgamer2626.service.websocket.WebSocketService;
@@ -9,7 +12,9 @@ import me.grgamer2626.utils.scheduler.Scheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -72,7 +77,7 @@ public class TableManager implements TableService {
 			playerSlots.remove(slot);
 			
 			stopStartCountDown(table);
-			String destination = "/topic/table/"+tableId+"/popupVisibility";
+			String destination = "/topic/table/" + tableId + "/popupVisibility";
 			webSocketService.sendTo(destination, "StartCountDownStop");
 			
 			if(playerSlots.getPlayerAmount() < 2) {
@@ -111,6 +116,7 @@ public class TableManager implements TableService {
 		
 		if(playerSlots.readyPlayersCount() == playerSlots.getPlayerAmount()) {
 			stopStartCountDown(table);
+			playerSlots.getNonNull().forEach(p-> p.setPushedStart(false));
 			table.startGame();
 			
 			String destination = "/topic/table/"+tableId+"/popupVisibility";
@@ -118,6 +124,30 @@ public class TableManager implements TableService {
 		}
 	}
 	
+	
+	@Override
+	public String endGame(long tableId, String playerName) {
+		GameTable table = getTable(tableId);
+		PlayerSlots playerSlots = table.getPlayerSlots();
+		
+		Player player = playerSlots.getByName(playerName);
+		Hand hand = player.getOnHand();
+		
+		if(!hand.isEmpty() || !player.isLayDown()) return null;
+		
+		boolean anyIncorrectSequence = playerSlots.getNonNull().stream()
+				.filter(Player::isLayDown)
+				.map(Player::getSequences)
+				.map(Map::values)
+				.flatMap(Collection::stream)
+				.anyMatch(sequence-> !sequence.isSequenceCorrect());
+		
+		if(anyIncorrectSequence) return null;
+		
+		table.endGame();
+		
+		return playerName;
+	}
 	
 	private void switchStartButtonVisibility(List<String> playersNames, long tableId, boolean visible) {
 		String destination = "/topic/table/" + tableId;

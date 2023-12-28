@@ -13,6 +13,6 @@ public interface TableService {
 	
 	void startGame(long tableId, String playerName);
 	
-
+	String endGame(long tableId, String playerName);
 	
 }

@@ -28,9 +28,15 @@ function createDragOverListener(sequence) {
 	sequence.addEventListener("dragover", handleDragOver);
 }
 
-function removeDragOverListener(sequence) {
+function removeAllDragOverListener() {
 	sequences = document.querySelectorAll('.droppable');
-	draggable.removeEventListener("dragover", handleDragOver);
+	sequences.forEach(sequence=> {
+		sequence.removeEventListener("dragover", handleDragOver);
+	});
+}
+
+function removeDragOverListener(droppable) {
+	droppable.removeEventListener("dragover", handleDragOver);
 }
 
 function handleDragOver(event) {
@@ -75,16 +81,13 @@ function handleDragEnd(event) {
 
 /** Util **/
 function callCardDropEvent(dragged, sequence) {
-	let event = new Event("cardDroped");
-	event.cardId = dragged.getAttribute('data-id');
-	event.sourceId = dragged.getAttribute('data-source-sequence');
-	event.destinationId = sequence.id;
+	const event = new Event("cardDroped");
+		  event.cardId = dragged.getAttribute('data-id');
+		  event.sourceId = dragged.getAttribute('data-source-sequence');
+		  event.destinationId = sequence.id;
 
-	//   if(event.sourceId !== event.destinationId) {
+	
 	document.dispatchEvent(event);
-	//   }
-
-
 }
 
 function checkX(sequenceRect, x) {

@@ -20,7 +20,6 @@ public interface GameService {
 	
 	Map<Integer, Integer> startGame(long tableId);
 	
-	
 	Card takeFromDeck(long tableId, String playerName);
 	
 	Card takeFromStack(long tableId, String playerName);

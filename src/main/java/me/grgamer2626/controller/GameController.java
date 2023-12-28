@@ -62,6 +62,7 @@ public class GameController {
 	}
 	
 	public List<CardDto> startGame(long tableId, int slot, Player player) {
+		
 		List<CardDto> onHand = player.getOnHand().stream()
 										.map(card -> new CardDto(card.getId(), card.getImgPath()))
 										.collect(Collectors.toList());
@@ -85,11 +86,6 @@ public class GameController {
 		
 		return layDown;
 	}
-	
-	
-	
-	
-	
 	
 	//*********************** Take From Deck ***********************//
 	@MessageMapping("/rummy/table/{tableId}/takeFromDeck")
@@ -169,6 +165,7 @@ public class GameController {
 		
 		String destination = "/topic/table/" + tableId + "/slot/" + playerSlot + "/confirmTakenCard";
 		webSocketService.sendToUser(playerName, destination, dto);
+		
 		return dto;
 	}
 	
@@ -275,27 +272,6 @@ public class GameController {
 		
 		player.setPhase(TurnPhases.NOT_YOUR_TURN);
 		
-		/*
-		if(player.handLength() == 0) {
-			if(player.isLayDown()) {
-				boolean allCorrect = true;
-				for(Sequence sequence : player.getSequences().values()) {
-					if(!sequence.isSequenceCorrect()) {
-						allCorrect = false;
-						break;
-					}
-				}
-				if(allCorrect) {
-					endGame();
-					return dto;
-				}
-			}else if(player.layDown()) {
-				endGame();
-				return dto;
-			}
-			
-		}
-		*/
 		int nextTurn = game.next();
 		yourTurn(tableId, nextTurn);
 		
@@ -338,9 +314,4 @@ public class GameController {
 		return map;
 	}
 	
-	
-	
-	public void endGame() {
-		//TODO
-	}
 }

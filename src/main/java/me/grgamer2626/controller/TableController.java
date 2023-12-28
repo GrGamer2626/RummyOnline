@@ -2,16 +2,20 @@ package me.grgamer2626.controller;
 
 import me.grgamer2626.model.games.Game;
 import me.grgamer2626.model.games.cards.Card;
+import me.grgamer2626.model.games.player.Player;
 import me.grgamer2626.model.tables.GameTable;
+import me.grgamer2626.model.tables.PlayerSlots;
 import me.grgamer2626.model.users.User;
 import me.grgamer2626.model.users.UserRepository;
 import me.grgamer2626.service.tables.TableService;
 import me.grgamer2626.service.websocket.WebSocketService;
+import me.grgamer2626.utils.dto.EndGameDto;
 import me.grgamer2626.utils.dto.SlotDto;
 import me.grgamer2626.utils.scheduler.Scheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -99,4 +103,24 @@ public class TableController {
 		tableService.startGame(tableId, playerName);
 	}
 	
+	@MessageMapping("/rummy/table/{tableId}/endGame")
+	@SendTo("/topic/table/{tableId}/endGame")
+	public EndGameDto endGame(@DestinationVariable long tableId, @Payload int currentSlot, Principal principal) {
+		String playerName = principal.getName();
+		
+		String winnerName = tableService.endGame(tableId, playerName);
+		if(winnerName == null) return null;
+		
+		PlayerSlots playerSlots = tableService.getTable(tableId).getPlayerSlots();
+		for(Player player: playerSlots.getNonNull()) {
+			endGame(tableId, player.getSlot(), player.getName());
+		}
+		
+		return new EndGameDto(winnerName);
+	}
+	
+	private void endGame(long tableId, int playerSlot, String playerName) {
+		String destination = "topic/table/" + tableId + "/slot/" + playerSlot + "/endGame";
+		webSocketService.sendToUser(playerName, destination, playerSlot);
+	}
 }

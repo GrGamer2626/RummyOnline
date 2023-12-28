@@ -1,12 +1,26 @@
+///////////// Take Slot /////////////
+function takeSlot(slotNumber) {
+	const headers = {}
+	client.send(`/app/rummy/table/${tableId}/takeSlot`, headers, slotNumber);
+}
+
+
 function onTakeSlotGeneral(serverResponse) {
 	const json = JSON.parse(serverResponse.body);
-
+	
 	const {slot, playerName} = json
-
+	
 	if(slot === currentSlot) return;
-
+	
 	let slotId = `player-slot-${slot}`;
 	createTakenSlot(slotId, playerName);
+}
+
+///////////// Leave Slot /////////////
+
+function leaveSlot(slotNumber) {
+	const headers = {}
+	client.send(`/app/rummy/table/${tableId}/leaveSlot`, headers, slotNumber);
 }
 
 function onLeaveSlot(serverResponse) {

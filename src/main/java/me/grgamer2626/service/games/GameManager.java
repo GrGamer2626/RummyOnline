@@ -12,7 +12,6 @@ import me.grgamer2626.model.games.player.Player;
 import me.grgamer2626.model.games.player.sequences.Sequence;
 import me.grgamer2626.model.tables.PlayerSlots;
 import me.grgamer2626.service.tables.TableService;
-import me.grgamer2626.service.websocket.WebSocketService;
 import me.grgamer2626.utils.GameCollection;
 import me.grgamer2626.utils.dto.CardDto;
 import me.grgamer2626.utils.dto.LayDownDto;
@@ -36,12 +35,10 @@ import java.util.stream.Collectors;
 public class GameManager implements GameService {
 	
 	private final TableService tableService;
-	private final WebSocketService webSocketService;
 	
 	@Autowired
-	public GameManager(TableService tableService, WebSocketService webSocketService) {
+	public GameManager(TableService tableService) {
 		this.tableService = tableService;
-		this.webSocketService = webSocketService;
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -305,8 +302,6 @@ public class GameManager implements GameService {
 	}
 	
 	
-	
-	
 	@Override
 	public ThrowCardDto throwCard(long tableId, String playerName, ThrowCardInputDto throwCardDto) {
 		Game game = getGame(tableId);
@@ -348,7 +343,7 @@ public class GameManager implements GameService {
 		boolean layDown = player.layDown();
 		
 		if(layDown) {
-			player.getSequences().values().forEach(sequence ->
+			player.getSequences().values().forEach(sequence->
 					sequence.forEach(card->
 							card.setMovable(false)));
 			
