@@ -71,6 +71,11 @@ public final class Sequence extends ArrayList<Card> implements GameCollection {
 	}
 	
 	public int getSequenceValue() {
+		this.sequenceValue = 0;
+		this.sequenceValue = stream()
+				.mapToInt(Card::getValue)
+				.sum();
+		
 		return sequenceValue;
 	}
 	
@@ -81,11 +86,7 @@ public final class Sequence extends ArrayList<Card> implements GameCollection {
 		boolean added = super.add(card);
 		if(added) {
 			sort();
-			
-			if(size() >= 3) {
-				setType();
-			}
-			sequenceValue += card.getValue();
+			setType();
 		}
 		return added;
 	}
@@ -95,14 +96,9 @@ public final class Sequence extends ArrayList<Card> implements GameCollection {
 		if(containId(card.getId())) throw new IllegalArgumentException("The hand contains card with id: "+card.getId());
 		
 		super.add(index, card);
+		
 		sort();
-		
-		type = null;
-		
-		if(size() >= 3) {
-			setType();
-		}
-		sequenceValue += card.getValue();
+		setType();
 	}
 	
 	@Override
@@ -114,15 +110,7 @@ public final class Sequence extends ArrayList<Card> implements GameCollection {
 		boolean added = super.addAll(cards);
 		if(added) {
 			sort();
-			
-			type = null;
-			
-			if(size() >= 3) {
-				setType();
-			}
-			for(Card card : cards) {
-				sequenceValue += card.getValue();
-			}
+			setType();
 		}
 		return added;
 	}
@@ -136,15 +124,7 @@ public final class Sequence extends ArrayList<Card> implements GameCollection {
 		boolean added = super.addAll(index, cards);
 		if(added) {
 			sort();
-			
-			type = null;
-			
-			if(size() >= 3) {
-				setType();
-			}
-			for(Card card : cards) {
-				sequenceValue += card.getValue();
-			}
+			setType();
 		}
 		
 		return added;
@@ -153,13 +133,7 @@ public final class Sequence extends ArrayList<Card> implements GameCollection {
 	@Override
 	public Card remove(int index) {
 		Card card = super.remove(index);
-		
-		type = null;
-		
-		if(size() >= 3) {
-			setType();
-		}
-		sequenceValue -= card.getValue();
+		setType();
 		
 		return card;
 	}
@@ -170,13 +144,7 @@ public final class Sequence extends ArrayList<Card> implements GameCollection {
 		
 		boolean removed = super.remove(card);
 		if(removed) {
-			
-			type = null;
-			
-			if(size() >= 3) {
-				setType();
-			}
-			sequenceValue -= ((Card)card).getValue();
+			setType();
 		}
 		
 		return removed;
