@@ -5,6 +5,18 @@
 
 
 @media (max-width:992px) {
+    #leftSide {
+        width: 100%;
+        max-width: 100%;
+        justify-content: center;
+        margin: 0;
+    }
+
+    #rightSide {
+        width: 100%;
+        justify-content: center;
+    }
+
     main form {
         justify-content: center !important;
         padding: 0 !important;

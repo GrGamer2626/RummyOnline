@@ -167,10 +167,16 @@ a:hover {
 
 /************** Main Footer **************/
 #main-footer {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 6.5%;
+
+    text-align: center;
+    justify-content: center;
+    align-items: center;
     background-color: #1E1E1E;
-    /*height: 15%;*/
-    /*clear: both;*/
-   /* text-align: center;*/
 }
 
 #main-footer h5 {

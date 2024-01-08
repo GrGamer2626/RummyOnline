@@ -61,6 +61,10 @@ public final class GameTable implements Identifiable<Long> {
 		}
 	}
 	
+	public void removeUser(User user) {
+		usersInTable.remove(user);
+	}
+	
 	public User getTableOwner() {
 		return tableOwner;
 	}
