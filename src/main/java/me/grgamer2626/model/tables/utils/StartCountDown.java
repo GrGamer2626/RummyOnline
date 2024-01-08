@@ -4,7 +4,7 @@ import me.grgamer2626.model.tables.GameTable;
 import me.grgamer2626.model.tables.PlayerSlots;
 import me.grgamer2626.service.tables.TableService;
 import me.grgamer2626.service.websocket.WebSocketService;
-import me.grgamer2626.utils.dto.SlotDto;
+import me.grgamer2626.utils.dto.game.SlotDto;
 
 public class StartCountDown implements Runnable {
 	

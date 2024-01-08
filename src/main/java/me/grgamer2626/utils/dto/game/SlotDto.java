@@ -1,4 +1,4 @@
-package me.grgamer2626.utils.dto;
+package me.grgamer2626.utils.dto.game;
 
 public class SlotDto {
 	

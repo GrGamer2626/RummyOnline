@@ -1,4 +1,6 @@
-package me.grgamer2626.utils.dto;
+package me.grgamer2626.utils.dto.game;
+
+import me.grgamer2626.utils.dto.game.CardDto;
 
 import java.util.List;
 import java.util.Map;

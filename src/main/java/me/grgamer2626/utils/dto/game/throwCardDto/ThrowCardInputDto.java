@@ -1,4 +1,4 @@
-package me.grgamer2626.utils.dto.throwCardDto;
+package me.grgamer2626.utils.dto.game.throwCardDto;
 
 public class ThrowCardInputDto extends ThrowCardDto {
 	

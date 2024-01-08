@@ -1,4 +1,4 @@
-package me.grgamer2626.utils.dto.throwCardDto;
+package me.grgamer2626.utils.dto.game.throwCardDto;
 
 import me.grgamer2626.model.games.Game;
 import me.grgamer2626.model.games.player.Player;

@@ -2,15 +2,15 @@ package me.grgamer2626.service.games;
 
 import me.grgamer2626.model.games.Game;
 import me.grgamer2626.model.games.cards.Card;
-import me.grgamer2626.utils.dto.CardDto;
-import me.grgamer2626.utils.dto.LayDownDto;
-import me.grgamer2626.utils.dto.ReturnCardDto;
-import me.grgamer2626.utils.dto.moveCard.MoveCardDto;
-import me.grgamer2626.utils.dto.moveCard.MoveCardInputDto;
-import me.grgamer2626.utils.dto.moveCard.ReplaceJokerDto;
-import me.grgamer2626.utils.dto.takeCard.TakeCardDto;
-import me.grgamer2626.utils.dto.throwCardDto.ThrowCardDto;
-import me.grgamer2626.utils.dto.throwCardDto.ThrowCardInputDto;
+import me.grgamer2626.utils.dto.game.CardDto;
+import me.grgamer2626.utils.dto.game.LayDownDto;
+import me.grgamer2626.utils.dto.game.ReturnCardDto;
+import me.grgamer2626.utils.dto.game.moveCard.MoveCardDto;
+import me.grgamer2626.utils.dto.game.moveCard.MoveCardInputDto;
+import me.grgamer2626.utils.dto.game.moveCard.ReplaceJokerDto;
+import me.grgamer2626.utils.dto.game.takeCard.TakeCardDto;
+import me.grgamer2626.utils.dto.game.throwCardDto.ThrowCardDto;
+import me.grgamer2626.utils.dto.game.throwCardDto.ThrowCardInputDto;
 
 import java.util.Map;
 

@@ -1,6 +1,6 @@
-package me.grgamer2626.utils.dto.moveCard;
+package me.grgamer2626.utils.dto.game.moveCard;
 
-import me.grgamer2626.utils.dto.CardDto;
+import me.grgamer2626.utils.dto.game.CardDto;
 
 public class MoveCardLayDownDto extends MoveCardDto {
 	

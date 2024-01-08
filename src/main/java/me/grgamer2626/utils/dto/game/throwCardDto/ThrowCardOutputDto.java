@@ -1,6 +1,6 @@
-package me.grgamer2626.utils.dto.throwCardDto;
+package me.grgamer2626.utils.dto.game.throwCardDto;
 
-import me.grgamer2626.utils.dto.CardDto;
+import me.grgamer2626.utils.dto.game.CardDto;
 
 public class ThrowCardOutputDto extends ThrowCardDto {
 	

@@ -1,4 +1,4 @@
-package me.grgamer2626.utils.dto.moveCard;
+package me.grgamer2626.utils.dto.game.moveCard;
 
 import me.grgamer2626.model.games.cards.utils.Figures;
 
