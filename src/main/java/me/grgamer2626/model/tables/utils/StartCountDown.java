@@ -22,8 +22,8 @@ public class StartCountDown implements Runnable {
 		this.webSocketService = webSocketService;
 		this.tableService = tableService;
 		
-		this.direction="/topic/table/"+tableId+"/startGameCountDown";
-		this.leaveDirection ="/topic/table/"+tableId+"/leaveSlot";
+		this.direction = "/topic/startGameCountDown";
+		this.leaveDirection = "/topic/leaveSlot";
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -8,7 +8,7 @@ function throwCard(cardId, sourceSlot, sourceNumber) {
 			'sourceNumber' : sourceNumber
 		});
 
-	client.send(`/app/rummy/table/${tableId}/throwCard`, headers, message);
+	client.send(`/app/rummy/${tableId}/throwCard`, headers, message);
 }
 
 function onThrowCard(serverResponse) {
@@ -16,7 +16,7 @@ function onThrowCard(serverResponse) {
 
 	const {playerSlot, layDown, cardDto, sourceNumber, sourceSlot } = json;
 
-	client.send(`/app/rummy/table/${tableId}/endGame`, {}, currentSlot);
+	client.send(`/app/rummy/${tableId}/endGame`, {}, currentSlot);
 
 	if(currentSlot === playerSlot) return;
 

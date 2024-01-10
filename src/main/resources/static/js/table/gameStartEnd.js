@@ -1,6 +1,6 @@
 function start() {
 	const headers = {}
-	client.send(`/app/rummy/table/${tableId}/startGameCountDown`, headers, currentSlot);
+	client.send(`/app/rummy/${tableId}/startGameCountDown`, headers, currentSlot);
 }
 
 function onStartGame(serverResponse) {

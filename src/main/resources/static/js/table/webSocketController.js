@@ -21,52 +21,52 @@ var layDownSlotSub;
 
 function connect() {
 	tableId = document.getElementById("tableId").innerText;
-	client = Stomp.client("ws://localhost:8080/rummy");
+	client = Stomp.client(`ws://localhost:8080/rummy/${tableId}`);
 	const headers = {}
 
 	client.connect(headers, (frame) => {
 		//Update leave slot state for everyone
-		client.subscribe(`/topic/table/${tableId}/takeSlot`, onTakeSlotGeneral);
+		client.subscribe(`/topic/takeSlot`, onTakeSlotGeneral);
 
 		//Update leave slot state for everyone
-		client.subscribe(`/topic/table/${tableId}/leaveSlot`, onLeaveSlot);
+		client.subscribe(`/topic/leaveSlot`, onLeaveSlot);
 
 		//Reciving count down time
-		client.subscribe(`/topic/table/${tableId}/startGameCountDown`, onStartGameCountDown);
+		client.subscribe(`/topic/startGameCountDown`, onStartGameCountDown);
 
 		//Displaying information popups
-		client.subscribe(`/topic/table/${tableId}/popupVisibility`, onPopupVisibility);
+		client.subscribe(`/topic/popupVisibility`, onPopupVisibility);
 
 		//Start game data
-		client.subscribe(`/topic/table/${tableId}/startGame`, onStartGame);
+		client.subscribe(`/topic/startGame`, onStartGame);
 
 		//End game
-		client.subscribe(`/topic/table/${tableId}/endGame`, onEndGame);
+		client.subscribe(`/topic/endGame`, onEndGame);
 
 		//Take from deck
-		client.subscribe(`/topic/table/${tableId}/takeFromDeck`, onTakeFromDeck);
+		client.subscribe(`/topic/takeFromDeck`, onTakeFromDeck);
 
 		//Take from stack
-		client.subscribe(`/topic/table/${tableId}/takeFromStack`, onTakeFromStack);
-		client.subscribe(`/topic/table/${tableId}/returnCard`, onReturnCard);
+		client.subscribe(`/topic/takeFromStack`, onTakeFromStack);
+		client.subscribe(`/topic/returnCard`, onReturnCard);
 
 
-		client.subscribe(`/topic/table/${tableId}/moveCard`, onMoveCard);
-		client.subscribe(`/topic/table/${tableId}/replaceJoker`, onReplaceJoker);
-		client.subscribe(`/topic/table/${tableId}/throwCard`, onThrowCard);
+		client.subscribe(`/topic/moveCard`, onMoveCard);
+		client.subscribe(`/topic/replaceJoker`, onReplaceJoker);
+		client.subscribe(`/topic/throwCard`, onThrowCard);
 
-		client.subscribe(`/topic/table/${tableId}/layDown`, onLayDown);
+		client.subscribe(`/topic/layDown`, onLayDown);
 
 		//Add to user to certain slot subscription
-		client.subscribe(`/user/topic/table/${tableId}/slotSubscription`, onSlotSubscription);
+		client.subscribe(`/user/topic/pm/slotSubscription`, onSlotSubscription);
 		//Show start button
-		client.subscribe(`/user/topic/table/${tableId}/showStartButton`, onShowStartButton);
+		client.subscribe(`/user/topic/pm/showStartButton`, onShowStartButton);
 		//Hide start button
-		client.subscribe(`/user/topic/table/${tableId}/hideStartButton`, onHideStartButton);
+		client.subscribe(`/user/topic/pm/hideStartButton`, onHideStartButton);
 
-		client.subscribe(`/user/topic/table/${tableId}/confirmTakenCard`, onConfirmSlotSubscription);
+		//client.subscribe(`/user/topic/confirmTakenCard`, onConfirmSlotSubscription);
 
-		client.subscribe(`/user/topic/table/${tableId}/tableOwner`, onTableOwner)
+		client.subscribe(`/user/topic/pm/tableOwner`, onTableOwner)
 	});
 }
 
@@ -87,19 +87,20 @@ function onSlotSubscription(serverResponse) {
 		setPlayerSlots(i, slotNumber);
 	}
 
-	startGameSlotSub = client.subscribe(`/user/topic/table/${tableId}/slot/${slotNumber}/startGame`, onStartGameSlotSubscription);
-	endGameSlotSub = client.subscribe(`/user/topic/table/${tableId}/slot/${slotNumber}/endGame`, onEndGameSlotSubscription);
-	yourTurn = client.subscribe(`/user/topic/table/${tableId}/slot/${slotNumber}/yourTurn`, onYourTurn);
+	startGameSlotSub = client.subscribe(`/user/topic/pm/startGame`, onStartGameSlotSubscription);
+	endGameSlotSub = client.subscribe(`/user/topic/pm/endGame`, onEndGameSlotSubscription);
+	yourTurn = client.subscribe(`/user/topic/pm/yourTurn`, onYourTurn);
 
-	takeFromDeckSlotSub = client.subscribe(`/user/topic/table/${tableId}/slot/${slotNumber}/takeFromDeck`, onTakeFromDeckSlotSubscription);
-	takeFromStackSlotSub = client.subscribe(`/user/topic/table/${tableId}/slot/${slotNumber}/takeFromStack`, onTakeFromStackSlotSubscription);
-	returnCardSlotSub = client.subscribe(`/user/topic/table/${tableId}/slot/${slotNumber}/returnCard`, onReturnCardSlotSubscription);
+	takeFromDeckSlotSub = client.subscribe(`/user/topic/pm/takeFromDeck`, onTakeFromDeckSlotSubscription);
+	takeFromStackSlotSub = client.subscribe(`/user/topic/pm/takeFromStack`, onTakeFromStackSlotSubscription);
+	returnCardSlotSub = client.subscribe(`/user/topic/pm/returnCard`, onReturnCardSlotSubscription);
+	confirmTakenCardSlotSub = client.subscribe(`/user/topic/pm/confirmTakenCard`, onConfirmSlotSubscription);
 
-	moveCardSlotSub = client.subscribe(`/user/topic/table/${tableId}/slot/${slotNumber}/moveCard`, onMoveCardSlotSubscription);
-	replaceJokerSlotSub = client.subscribe(`/user/topic/table/${tableId}/slot/${slotNumber}/replaceJoker`, onReplaceJokerSlotSubscription);
-	throwCardSlotSub = client.subscribe(`/user/topic/table/${tableId}/slot/${slotNumber}/throwCard`, onThrowCardSlotSubscription);
+	moveCardSlotSub = client.subscribe(`/user/topic/pm/moveCard`, onMoveCardSlotSubscription);
+	replaceJokerSlotSub = client.subscribe(`/user/topic/pm/replaceJoker`, onReplaceJokerSlotSubscription);
+	throwCardSlotSub = client.subscribe(`/user/topic/pm/throwCard`, onThrowCardSlotSubscription);
 
-	layDownSlotSub = client.subscribe(`/user/topic/table/${tableId}/slot/${slotNumber}/layDown`, onLayDownSlotSubscription);
+	layDownSlotSub = client.subscribe(`/user/topic/pm/layDown`, onLayDownSlotSubscription);
 }
 
 
@@ -150,7 +151,7 @@ function onPopupVisibility(serverResponse) {
 
 	}else if(action === "StartGame") {
 		const headers = {}
-		client.send(`/app/rummy/table/${tableId}/startGame`, headers, currentSlot);
+		client.send(`/app/rummy/${tableId}/startGame`, headers, currentSlot);
 	}
 }
 
@@ -218,8 +219,8 @@ function moveCard(cardId, sourceSlot, sourceNumber, destinationId) {
 	const headers = {}
 	const message = JSON.stringify(moveCardJson);
 
-	client.send(`/app/rummy/table/${tableId}/moveCard`, headers, message);
-	client.send(`/app/rummy/table/${tableId}/replaceJoker`, headers, message);
+	client.send(`/app/rummy/${tableId}/moveCard`, headers, message);
+	client.send(`/app/rummy/${tableId}/replaceJoker`, headers, message);
 
 	moveCardJson = null;
 }
@@ -231,7 +232,7 @@ function setJokerValue(value) {
 
 	const headers = {}
 	const message = JSON.stringify(moveCardJson);
-	client.send(`/app/rummy/table/${tableId}/moveCard`, headers, message);
+	client.send(`/app/rummy/${tableId}/moveCard`, headers, message);
 
 	moveCardJson = null;
 
@@ -245,7 +246,7 @@ function setJokerValue(value) {
 //send to server
 function layDown() {
 	const headers = {}
-	client.send(`/app/rummy/table/${tableId}/layDown`, headers, currentSlot);
+	client.send(`/app/rummy/${tableId}/layDown`, headers, currentSlot);
 }
 
 /************ Table Owner ************/

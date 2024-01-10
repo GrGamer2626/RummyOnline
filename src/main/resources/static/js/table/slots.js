@@ -1,7 +1,7 @@
 ///////////// Take Slot /////////////
 function takeSlot(slotNumber) {
 	const headers = {}
-	client.send(`/app/rummy/table/${tableId}/takeSlot`, headers, slotNumber);
+	client.send(`/app/rummy/${tableId}/takeSlot`, headers, slotNumber);
 }
 
 
@@ -20,7 +20,7 @@ function onTakeSlotGeneral(serverResponse) {
 
 function leaveSlot(slotNumber) {
 	const headers = {}
-	client.send(`/app/rummy/table/${tableId}/leaveSlot`, headers, slotNumber);
+	client.send(`/app/rummy/${tableId}/leaveSlot`, headers, slotNumber);
 }
 
 function onLeaveSlot(serverResponse) {

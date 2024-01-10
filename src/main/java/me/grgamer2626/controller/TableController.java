@@ -67,8 +67,8 @@ public class TableController {
 		return "table";
 	}
 	
-	@MessageMapping("/rummy/table/{tableId}/takeSlot")
-	@SendTo("/topic/table/{tableId}/takeSlot")
+	@MessageMapping("/rummy/{tableId}/takeSlot")
+	@SendTo("/topic/takeSlot")
 	public SlotDto takeSlot(@DestinationVariable long tableId, int slotNumber, Principal principal) {
 		String playerName = principal.getName();
 		User user = userRepository.findByName(principal.getName());
@@ -79,14 +79,14 @@ public class TableController {
 		
 		if(success) {
 			slotDto = new SlotDto(slotNumber, playerName);
-			String destination = "/topic/table/"+tableId+"/slotSubscription";
+			String destination = "/topic/pm/slotSubscription";
 			webSocketService.sendToUser(playerName, destination, slotDto);
 		}
 		return slotDto;
 	}
 	
-	@MessageMapping("/rummy/table/{tableId}/leaveSlot")
-	@SendTo("/topic/table/{tableId}/leaveSlot")
+	@MessageMapping("/rummy/{tableId}/leaveSlot")
+	@SendTo("/topic/leaveSlot")
 	public SlotDto leaveSlot(@DestinationVariable long tableId, int slotNumber, Principal principal) {
 		boolean success = tableService.leaveSlot(tableId, slotNumber);
 		
@@ -97,14 +97,14 @@ public class TableController {
 		return slotDto;
 	}
 	
-	@MessageMapping("/rummy/table/{tableId}/startGameCountDown")
+	@MessageMapping("/rummy/{tableId}/startGameCountDown")
 	public void startingCountDown(@DestinationVariable long tableId, int slotNumber, Principal principal) {
 		String playerName = principal.getName();
 		tableService.startGame(tableId, playerName);
 	}
 	
-	@MessageMapping("/rummy/table/{tableId}/endGame")
-	@SendTo("/topic/table/{tableId}/endGame")
+	@MessageMapping("/rummy/{tableId}/endGame")
+	@SendTo("/topic/endGame")
 	public EndGameDto endGame(@DestinationVariable long tableId, @Payload int currentSlot, Principal principal) {
 		String playerName = principal.getName();
 		
@@ -120,7 +120,7 @@ public class TableController {
 	}
 	
 	private void endGame(long tableId, int playerSlot, String playerName) {
-		String destination = "topic/table/" + tableId + "/slot/" + playerSlot + "/endGame";
+		String destination = "topic/pm/endGame";
 		webSocketService.sendToUser(playerName, destination, playerSlot);
 	}
 }

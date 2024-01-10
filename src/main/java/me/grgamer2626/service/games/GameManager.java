@@ -260,7 +260,7 @@ public class GameManager implements GameService {
 		Player player = game.getPlayerSlots().getByName(playerName);
 		int playerSlot = player.getSlot();
 		
-		if(playerSlot != game.getCurrentTurnPlayer() || player.getPhase() != TurnPhases.MOVE_CARDS) return null;
+		if(playerSlot != game.getCurrentTurnPlayer() || (player.getPhase() != TurnPhases.MOVE_CARDS && player.getPhase() != TurnPhases.CARD_TAKEN_FROM_STACK)) return null;
 		
 		int cardId = moveCardDto.getCardId();
 		

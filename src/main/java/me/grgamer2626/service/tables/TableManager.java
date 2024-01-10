@@ -52,7 +52,7 @@ public class TableManager implements TableService {
 		playerSlots.replace(slot, new Player(user.getId(), userName, slot));
 		
 		stopStartCountDown(table);
-		String destination = "/topic/table/"+tableId+"/popupVisibility";
+		String destination = "/topic/popupVisibility";
 		webSocketService.sendTo(destination, "StartCountDownStop");
 		
 		if(playerSlots.getPlayerAmount() >= 2) {
@@ -77,7 +77,7 @@ public class TableManager implements TableService {
 			playerSlots.remove(slot);
 			
 			stopStartCountDown(table);
-			String destination = "/topic/table/" + tableId + "/popupVisibility";
+			String destination = "/topic/popupVisibility";
 			webSocketService.sendTo(destination, "StartCountDownStop");
 			
 			if(playerSlots.getPlayerAmount() < 2) {
@@ -109,7 +109,7 @@ public class TableManager implements TableService {
 		
 		if(table.getStartingCountDownTaskId() == -1) {
 			table.startStartingCountDown(webSocketService, this);
-			String destination = "/topic/table/"+tableId+"/popupVisibility";
+			String destination = "/topic/popupVisibility";
 			webSocketService.sendTo(destination, "StartCountDownRun");
 			return;
 		}
@@ -119,7 +119,7 @@ public class TableManager implements TableService {
 			playerSlots.getNonNull().forEach(p-> p.setPushedStart(false));
 			table.startGame();
 			
-			String destination = "/topic/table/"+tableId+"/popupVisibility";
+			String destination = "/topic/popupVisibility";
 			webSocketService.sendTo(destination, "StartGame");
 		}
 	}
@@ -150,13 +150,7 @@ public class TableManager implements TableService {
 	}
 	
 	private void switchStartButtonVisibility(List<String> playersNames, long tableId, boolean visible) {
-		String destination = "/topic/table/" + tableId;
-		if(visible) {
-			destination +="/showStartButton";
-			
-		}else {
-			destination += "/hideStartButton";
-		}
+		String destination = visible ? "/topic/pm/showStartButton" : "/topic/pm/hideStartButton";
 		
 		for(String playerName : playersNames) {
 			webSocketService.sendToUser(playerName, destination, 1);

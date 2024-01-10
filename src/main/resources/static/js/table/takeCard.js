@@ -2,7 +2,7 @@
 
 function takeFromDeck() {
 	const headers = {}
-	client.send(`/app/rummy/table/${tableId}/takeFromDeck`, headers, currentSlot);	
+	client.send(`/app/rummy/${tableId}/takeFromDeck`, headers, currentSlot);	
 }
 
 function onTakeFromDeck(serverResponse) {
@@ -41,8 +41,7 @@ function onTakeFromDeckSlotSubscription(serverResponse) {
 
 function takeFromStack() {
 	const headers = {}
-	client.send(`/app/rummy/table/${tableId}/takeFromStack`, headers, currentSlot);
-	
+	client.send(`/app/rummy/${tableId}/takeFromStack`, headers, currentSlot);
 }
 
 
@@ -92,7 +91,7 @@ function onTakeFromStackSlotSubscription(serverResponse) {
 
 function confirmCard() {
 	const header = {};
-	client.send(`/app/rummy/table/${tableId}/confirmTakenCard`, header, currentSlot);
+	client.send(`/app/rummy/${tableId}/confirmTakenCard`, header, currentSlot);
 }
 
 function onConfirmSlotSubscription(serverResponse) {
@@ -105,7 +104,7 @@ function onConfirmSlotSubscription(serverResponse) {
 
 function returnCard() {
 	const header = {};
-	client.send(`/app/rummy/table/${tableId}/returnCard`, header, currentSlot);
+	client.send(`/app/rummy/${tableId}/returnCard`, header, currentSlot);
 }
 
 function onReturnCard(serverResponse) {
@@ -116,9 +115,14 @@ function onReturnCard(serverResponse) {
 	let card;
 	const source = getGameCollection(sourceNumber, sourceSlot);
 	if(isHand(sourceNumber)) {
-		source.removeChild(source.children[0]);
-		card = createCard(cardDto, "1");
+		if(playerSlot !== currentSlot) {
+			source.removeChild(source.children[0]);
+			card = createCard(cardDto, "1");
 
+		}else {
+			card = source.querySelector(`.card[data-id="${cardDto.id}"]`);
+			source.removeChild(card);
+		}
 	}else {
 		card = source.querySelector(`.card[data-id="${cardDto.id}"]`);
 		source.removeChild(card);
