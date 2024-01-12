@@ -42,23 +42,24 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests(requests -> requests
-						.requestMatchers(permitAll).permitAll()
-						.requestMatchers("/login", "/registration", "/forget-password").anonymous()
-						.requestMatchers("/admin").hasAnyRole("ADMIN")
-						.anyRequest()
-				.authenticated())
+					.requestMatchers(permitAll).permitAll()
+					.requestMatchers("/login", "/registration", "/forget-password").anonymous()
+					.requestMatchers("/admin").hasAnyRole("ADMIN")
+					.anyRequest()
+					.authenticated())
 				
+			.formLogin(form -> form
+					.loginPage("/login")
+					.defaultSuccessUrl("/lobby")
+					.usernameParameter("nickName")
+					.passwordParameter("password"))
 				
-				.formLogin(form -> form
-						.loginPage("/login")
-						.defaultSuccessUrl("/lobby")
-						.usernameParameter("nickName")
-						.passwordParameter("password"))
+			.logout(logout-> logout.logoutSuccessUrl("/"))
 				
-				.logout(logout-> logout.logoutSuccessUrl("/"))
-				
-				.exceptionHandling(exception-> exception.accessDeniedHandler(accessDeniedHandler()))
-				.httpBasic(Customizer.withDefaults());
+			.exceptionHandling(exception-> exception
+					.accessDeniedHandler(accessDeniedHandler()))
+			
+			.httpBasic(Customizer.withDefaults());
 		
 		return http.build();
 	}
