@@ -18,12 +18,14 @@ public class User {
 	private String email;
 	@Column(name = "Password")
 	private String password;
+	@Column(name = "Enabled")
+	private boolean enabled = false;
 	
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinTable(
 			name = "Rummy_Users_Roles",
-			joinColumns = {@JoinColumn(name="UserId", table = "Rummy_Users") },
-			inverseJoinColumns = {@JoinColumn(name="RoleId", table = "Rummy_Roles") }
+			joinColumns = {@JoinColumn(name = "UserId", table = "Rummy_Users") },
+			inverseJoinColumns = {@JoinColumn(name = "RoleId", table = "Rummy_Roles") }
 		)
 	private Collection<Role> roles;
 	
@@ -51,36 +53,44 @@ public class User {
 		return id;
 	}
 	
-	public void setId(long id) {
-		this.id = id;
-	}
-	
 	public String getName() {
 		return name;
-	}
-	
-	public void setName(String name) {
-		this.name = name;
 	}
 	
 	public String getEmail() {
 		return email;
 	}
 	
-	public void setEmail(String email) {
-		this.email = email;
-	}
-	
 	public String getPassword() {
 		return password;
+	}
+	
+	public boolean isEnabled() {
+		return enabled;
+	}
+	
+	public Collection<Role> getRoles() {
+		return roles;
+	}
+	
+	public void setId(long id) {
+		this.id = id;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	public void setEmail(String email) {
+		this.email = email;
 	}
 	
 	public void setPassword(String password) {
 		this.password = password;
 	}
 	
-	public Collection<Role> getRoles() {
-		return roles;
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 	
 	public void setRoles(Collection<Role> roles) {
