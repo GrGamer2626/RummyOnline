@@ -83,4 +83,9 @@ public class VerificationToken {
 		return Date.from(expirationInstant);
 	}
 	
+	public boolean isExpired() {
+		Date now = Date.from(Instant.now());
+		return now.after(expirationTime);
+	}
+	
 }

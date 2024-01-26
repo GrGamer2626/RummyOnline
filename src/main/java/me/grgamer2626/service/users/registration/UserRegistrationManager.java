@@ -20,8 +20,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
-import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -72,9 +70,7 @@ public class UserRegistrationManager implements UserRegistrationService {
 		User user = token.getUser();
 		if(user.isEnabled()) throw new EmailAlreadyConfirmedException("This Email is already confirmed!");
 		
-		Date now = Date.from(Instant.now());
-		Date expirationTime = token.getExpirationTime();
-		if(now.after(expirationTime)) throw new TokenExpiredException("The token has been expired!");
+		if(token.isExpired()) throw new TokenExpiredException("The token has been expired!");
 		
 		user.setEnabled(true);
 		
