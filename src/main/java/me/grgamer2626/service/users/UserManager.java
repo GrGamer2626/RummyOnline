@@ -25,6 +25,11 @@ public class UserManager implements UserService {
 	}
 	
 	@Override
+	public User findById(Long userId) {
+		return userRepository.findById(userId).orElse(null);
+	}
+	
+	@Override
 	public User findByName(String name) {
 		return userRepository.findByName(name);
 	}

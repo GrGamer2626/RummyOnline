@@ -6,6 +6,8 @@ public interface UserService {
 	
 	User save(User user);
 	
+	User findById(Long userId);
+	
 	User findByName(String name);
 	
 	User findByEmail(String email);
