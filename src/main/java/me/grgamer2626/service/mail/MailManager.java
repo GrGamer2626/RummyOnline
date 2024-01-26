@@ -29,7 +29,7 @@ public class MailManager implements MailService {
 	
 	@Override
 	public String createVerificationUrl(String applicationUrl, String verificationToken) {
-		return applicationUrl + "/registration/emailVerification?token=" + verificationToken;
+		return applicationUrl + "/email-verification?token=" + verificationToken;
 	}
 	
 	@Override
