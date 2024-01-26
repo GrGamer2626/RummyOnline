@@ -8,7 +8,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 	<!-- CSS -->
 	<link rel="stylesheet" type="text/css" href="/css/global.css">
-	<link rel="stylesheet" type="text/css" href="/css/registration-success.css">
+	<link rel="stylesheet" type="text/css" href="/css/validation-error.css">
 	<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700&amp;subset=latin-ext" rel="stylesheet">
 	<!-- JS Scripts -->
 
@@ -19,12 +19,9 @@
 
 	<main>
 		<div id="main-content">
-			<h3>Registration Success!</h3>
-			<h5>Pleas go now to your email address and confirm your registration. If you haven't got it yet pleas check spam folder. </h5>
-			<h5>Verification token will expire in 10 min since registration.</h5>
-
-			<h5>If spam folder not contain it, and you haven't got message, or the verification link expired, push button below to resend verification link.</h5>
-			<button class="btn" th:onclick="'window.location.href=\'/email-verification/resend-email?userId=' + ${userId} + '\''"> Resend Verification Link</button>
+			<h3>Email Verification Failure!</h3>
+			<h5>An error occur during verification your email address. Please try it again.</h5>
+			<h5>If you believe it is our mistake, please contact us.</h5>
 		</div>
 	</main>
 
