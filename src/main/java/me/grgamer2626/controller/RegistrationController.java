@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import me.grgamer2626.event.RegistrationCompleteEvent;
 import me.grgamer2626.model.users.User;
+import me.grgamer2626.service.captcha.CaptchaService;
 import me.grgamer2626.service.users.registration.UserRegistrationService;
 import me.grgamer2626.service.users.exceptions.registration.RegistrationException;
 import me.grgamer2626.utils.dto.UserRegistrationDto;
@@ -19,11 +20,13 @@ import org.springframework.web.bind.annotation.*;
 public class RegistrationController {
 	
 	private final UserRegistrationService userService;
+	private final CaptchaService captchaService;
 	private final ApplicationEventPublisher eventPublisher;
 	
 	@Autowired
-	public RegistrationController(UserRegistrationService userService, ApplicationEventPublisher eventPublisher) {
+	public RegistrationController(UserRegistrationService userService, CaptchaService captchaService, ApplicationEventPublisher eventPublisher) {
 		this.userService = userService;
+		this.captchaService = captchaService;
 		this.eventPublisher = eventPublisher;
 	}
 	
@@ -41,6 +44,7 @@ public class RegistrationController {
 			model.addAttribute("userRegistrationDto", new UserRegistrationDto());
 			
 		}
+		model.addAttribute("hcaptchaSiteKey", captchaService.getSiteKey());
 		return "registration";
 	}
 	
@@ -50,12 +54,13 @@ public class RegistrationController {
 	}
 	
 	@PostMapping
-	public String registerUser(@ModelAttribute("userRegistrationDto") @Valid UserRegistrationDto dto, BindingResult bindingResult, Model model, HttpServletRequest request) {
+	public String registerUser(@ModelAttribute("userRegistrationDto") @Valid UserRegistrationDto dto, @RequestParam("h-captcha-response") String hCaptchaResponse, BindingResult bindingResult, Model model, HttpServletRequest request) {
 		userService.validateUser(dto, bindingResult);
 		if(bindingResult.hasErrors()) {
 			model.addAttribute("userRegistrationDto", dto);
 			return "registration";
 		}
+		
 		try {
 			User user = userService.registerUser(dto);
 			
@@ -64,14 +69,13 @@ public class RegistrationController {
 			eventPublisher.publishEvent(new RegistrationCompleteEvent(user, applicationUrl));
 			
 			model.addAttribute("userId", user.getId());
-			
+				
 			return "redirect:/registration/success";
 			
 		} catch (RegistrationException e) {
 			model.addAttribute("userRegistrationDto", dto);
 			e.printStackTrace();
 			return "registration";
-			//throw new RuntimeException(e);
 		}
 	}
 	

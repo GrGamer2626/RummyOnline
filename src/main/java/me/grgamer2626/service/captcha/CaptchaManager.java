@@ -14,8 +14,7 @@ public class CaptchaManager implements CaptchaService {
 	private final String siteKey;
 	
 	@Autowired
-	public CaptchaManager(@Value("${hcaptcha.secret-key}") String secretKey,
-	                      @Value("${hcaptcha.site-key}") String siteKey) {
+	public CaptchaManager(@Value("${hcaptcha.secret-key}") String secretKey, @Value("${hcaptcha.site-key}") String siteKey) {
 		this.verifyUrl = "https://api.hcaptcha.com/siteverify";
 		this.secretKey = secretKey;
 		this.siteKey = siteKey;
