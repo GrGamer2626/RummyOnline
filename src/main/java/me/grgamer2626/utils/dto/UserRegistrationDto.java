@@ -28,7 +28,13 @@ public class UserRegistrationDto {
 	private boolean termsAcceptance;
 	
 	
-	public UserRegistrationDto() {}
+	public UserRegistrationDto() {
+		this.nickName = "";
+		this.email = "";
+		this.password = "";
+		this.confirmPassword = "";
+		this.termsAcceptance = false;
+	}
 	
 	public UserRegistrationDto(String nickName, String email, String password, String confirmPassword, boolean termsAcceptance) {
 		this.nickName = nickName;

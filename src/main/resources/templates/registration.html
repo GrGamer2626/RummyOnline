@@ -15,31 +15,31 @@
 
 </head>
 
-<body>
+<body onload="onLoad()">
 	<header th:replace="~{fragments/main-header :: mainHeader}"></header>
 
 	<div id="main-content">
 		<main>
-			<form th:action="@{/registration}" method="post" th:object="${userRegistrationDto}">
+			<form autocomplete="off" th:action="@{/registration}" method="post" th:object="${userRegistrationDto}" >
 				<fieldset id="registration-field">
 					<h3 id="registration-header">Registration</h3>
 
-					<label>Nick Name <input id="nick-name" class="text-input" type="text" name="nickName" placeholder="nick name" required="" minlength="5" maxlength="30"/></label>
+					<label>Nick Name <input id="nick-name" class="text-input" type="text" name="nickName" placeholder="nick name" th:value="${userRegistrationDto.nickName}" autocomplete="new-user" required="" minlength="5" maxlength="30"/></label>
 					<div id="nick-name-error" class="error-message">
 						<div class="message" th:if="${#fields.hasErrors('nickName')}" th:errors="*{nickName}" ></div>
 					</div>
 
-					<label>Email <input id="email" class="text-input" type="email" name="email" placeholder="example@gmail.com" required="" /></label>
+					<label>Email <input id="email" class="text-input" type="email" name="email" placeholder="example@gmail.com" required="" th:value="${userRegistrationDto.email}" autocomplete="new-email"/></label>
 					<div id="email-error" class="error-message">
 						<div class="message" th:if="${#fields.hasErrors('email')}" th:errors="*{email}" ></div>
 					</div>
 
-					<label>Password <input id="password" class="text-input" type="password" name="password" placeholder="password" required="" minlength="8" maxlength="64"/></label>
+					<label>Password <input id="password" class="text-input" type="password" name="password" placeholder="password" value="" autocomplete="new-password" required="" minlength="8" maxlength="64"/></label>
 					<div id="password-error" class="error-message">
 						<div class="message" th:if="${#fields.hasErrors('password')}" th:errors="*{password}" ></div>
 					</div>
 
-					<label>Confirm Password <input id="confirm-password" class="text-input" type="password" name="confirmPassword" placeholder="password" required="" /></label>
+					<label>Confirm Password <input id="confirm-password" class="text-input" type="password" name="confirmPassword" placeholder="password" value="" required="" autocomplete="new-password" /></label>
 					<div id="confirm-password-error" class="error-message">
 						<div class="message" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}" ></div>
 					</div>

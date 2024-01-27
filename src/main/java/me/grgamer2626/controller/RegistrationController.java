@@ -32,8 +32,14 @@ public class RegistrationController {
 	@GetMapping
 	public String registration(Model model) {
 		Object dto = model.getAttribute("userRegistrationDto");
-		if(dto == null) {
+		if(dto != null) {
+			UserRegistrationDto registrationDto = (UserRegistrationDto) dto;
+			registrationDto.setPassword("");
+			registrationDto.setConfirmPassword("");
+			
+		}else {
 			model.addAttribute("userRegistrationDto", new UserRegistrationDto());
+			
 		}
 		return "registration";
 	}
