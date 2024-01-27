@@ -24,7 +24,7 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 @EnableWebSecurity
 public class SecurityConfig {
 	
-	private final String[] permitAll = {"/css/**", "/js/**", "/img/**", "/",  "/about-us", "how-to-play", "/rules", "/contact"};
+	private final String[] permitAll = {"/css/**", "/js/**", "/img/**", "/", "/email-verification/**", "/about-us", "how-to-play", "/rules", "/contact"};
 	private final UserRepository userRepository;
 	
 	@Autowired
@@ -45,9 +45,9 @@ public class SecurityConfig {
 				
 			.formLogin(form -> form
 					.loginPage("/login")
-					.defaultSuccessUrl("/lobby")
 					.usernameParameter("nickName")
-					.passwordParameter("password"))
+					.passwordParameter("password")
+					.defaultSuccessUrl("/lobby"))
 				
 			.logout(logout-> logout.logoutSuccessUrl("/"))
 				
