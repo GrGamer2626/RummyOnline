@@ -8,6 +8,7 @@ import me.grgamer2626.service.captcha.CaptchaService;
 import me.grgamer2626.service.users.registration.UserRegistrationService;
 import me.grgamer2626.service.users.exceptions.registration.RegistrationException;
 import me.grgamer2626.utils.dto.UserRegistrationDto;
+import me.grgamer2626.utils.dto.captcha.CaptchaResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Controller;
@@ -61,22 +62,26 @@ public class RegistrationController {
 			return "registration";
 		}
 		
-		try {
-			User user = userService.registerUser(dto);
-			
-			String applicationUrl = userService.createApplicationUrl(request);
-			
-			eventPublisher.publishEvent(new RegistrationCompleteEvent(user, applicationUrl));
-			
-			model.addAttribute("userId", user.getId());
+		CaptchaResponse captchaResponse = captchaService.validateToken(hCaptchaResponse);
+		if(captchaResponse.success()) {
+			try {
+				User user = userService.registerUser(dto);
 				
-			return "redirect:/registration/success";
-			
-		} catch (RegistrationException e) {
-			model.addAttribute("userRegistrationDto", dto);
-			e.printStackTrace();
-			return "registration";
+				String applicationUrl = userService.createApplicationUrl(request);
+				
+				eventPublisher.publishEvent(new RegistrationCompleteEvent(user, applicationUrl));
+				
+				model.addAttribute("userId", user.getId());
+				
+				return "redirect:/registration/success";
+				
+			} catch (RegistrationException e) {
+				model.addAttribute("userRegistrationDto", dto);
+				e.printStackTrace();
+				return "registration";
+			}
 		}
+		return "registration";
 	}
 	
 }
