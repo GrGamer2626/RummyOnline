@@ -104,14 +104,5 @@
       <version>8.2.0</version>
       <scope>runtime</scope>
     </dependency>
-
-    <!-- hCaptcha -->
-    <dependency>
-      <groupId>com.stripe</groupId>
-      <artifactId>hcaptcha</artifactId>
-      <version>20.37.1</version>
-      <scope>runtime</scope>
-    </dependency>
-
   </dependencies>
 </project>
