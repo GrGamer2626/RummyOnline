@@ -29,15 +29,15 @@ public final class PlayerSlots extends HashMap<Integer, Player> {
 		if (containsKey(key)) {
 			return super.put(key, value);
 			
-		}else throw new UnsupportedOperationException("Adding new keys is not allowed");
+		}else throw new IllegalArgumentException("Adding new keys is not allowed");
 	}
 	
 	@Override
-	public void putAll(Map<? extends Integer, ? extends Player> m) {
-		if (m.size() != FIXED_SIZE) {
-			throw new UnsupportedOperationException("The player slots must contain exactly 6 keys.");
+	public void putAll(Map<? extends Integer, ? extends Player> map) {
+		if(map.size() > FIXED_SIZE || !keySet().containsAll(map.keySet())) {
+			throw new IllegalArgumentException("Map contains illegals key value! The player slots must contain values between 1 and 6.");
 		}
-		super.putAll(m);
+		super.putAll(map);
 	}
 	
 	@Override
@@ -50,7 +50,14 @@ public final class PlayerSlots extends HashMap<Integer, Player> {
 	
 	@Override
 	public boolean remove(Object key, Object value) {
-		throw new UnsupportedOperationException("Removing with a specific value is not supported.");
+		if(!containsKey(key)) throw new IllegalArgumentException("The player slots does not contain the key: " + key);
+		Player player = get(key);
+		
+		if(player != null && player.equals(value)) {
+			super.put((Integer) key, null);
+			return true;
+		}
+		return false;
 	}
 	
 	public List<Player> getNonNull() {
