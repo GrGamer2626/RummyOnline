@@ -21,6 +21,11 @@
         justify-content: center !important;
         padding: 0 !important;
     }
+
+    #login-field {
+        width: 100% !important;
+        margin: 15px;
+    }
 }
 
 

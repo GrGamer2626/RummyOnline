@@ -12,6 +12,12 @@ body * {
 }
 /************** Main Header **************/
 
+#resolution {
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
 #main-header {
     background-color: #1E1E1E;
     /*height: 23%;*/
