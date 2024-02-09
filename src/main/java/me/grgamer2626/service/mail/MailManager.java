@@ -26,34 +26,23 @@ public class MailManager implements MailService {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-	
 	@Override
-	public String createVerificationUrl(String applicationUrl, String verificationToken) {
-		return applicationUrl + "/email-verification?token=" + verificationToken;
-	}
-	
-	@Override
-	public void sendVerificationEmail(User user, String url) throws MessagingException, UnsupportedEncodingException {
-		String subject = "Email Verification";
-		String senderName = "Game Fan";
-		
-		String content = "<p> Hi, " + user.getName() + ", </p>" +
-				"<p>Thanks for signing up on our platform! To complete your registration and unlock the full features of our service, we request you to confirm your email address.</p>" +
-				"<p>To do this, simply click the link below:<br><a href=\"" + url + "\">Confirm Email</a></p>" +
-				"<p>If the link doesn't work, copy the following URL and paste it into your browser's address bar:<br>" + url + " </p>" +
-				"<p>Please be aware that this verification link will expire within 10 minutes of your registration.</p>" +
-				"<p>Thanks for being a part of our community!</p>" +
-				"<p>Best regards,</p>" +
-				"<p>Game Fan</p>";
-		
+	public MimeMessage createMimeMessage(String sendTo, String subject, String content) throws MessagingException, UnsupportedEncodingException {
 		MimeMessage message = mailSender.createMimeMessage();
+		
+		String senderName = "Game Fan";
 		
 		MimeMessageHelper messageHelper = new MimeMessageHelper(message);
 		messageHelper.setFrom(from, senderName);
-		messageHelper.setTo(user.getEmail());
+		messageHelper.setTo(sendTo);
 		messageHelper.setSubject(subject);
 		messageHelper.setText(content, true);
 		
-		mailSender.send(messageHelper.getMimeMessage());
+		return messageHelper.getMimeMessage();
+	}
+	
+	@Override
+	public void sendMail(MimeMessage message) {
+		mailSender.send(message);
 	}
 }

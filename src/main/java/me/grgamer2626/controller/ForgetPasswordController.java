@@ -1,12 +1,17 @@
 package me.grgamer2626.controller;
 
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import me.grgamer2626.event.ForgetPasswordEvent;
+import me.grgamer2626.model.users.User;
 import me.grgamer2626.service.captcha.CaptchaService;
+import me.grgamer2626.service.changePassword.ForgetPasswordService;
 import me.grgamer2626.service.users.UserService;
-import me.grgamer2626.utils.dto.ForgetPasswordDto;
+import me.grgamer2626.utils.dto.forgetPassword.ForgetPasswordDto;
 import me.grgamer2626.utils.dto.captcha.CaptchaResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,13 +21,15 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/forget-password")
 public class ForgetPasswordController {
 	
-	private final UserService userService;
+	private final ForgetPasswordService passwordService;
 	private final CaptchaService captchaService;
+	private final ApplicationEventPublisher eventPublisher;
 	
 	@Autowired
-	public ForgetPasswordController(UserService userService, CaptchaService captchaService) {
-		this.userService = userService;
+	public ForgetPasswordController(ForgetPasswordService passwordService, CaptchaService captchaService, ApplicationEventPublisher eventPublisher) {
+		this.passwordService = passwordService;
 		this.captchaService = captchaService;
+		this.eventPublisher = eventPublisher;
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -36,6 +43,7 @@ public class ForgetPasswordController {
 			
 		}else {
 			model.addAttribute("forgetPasswordDto", new ForgetPasswordDto());
+			
 		}
 		model.addAttribute("hcaptchaSiteKey", captchaService.getSiteKey());
 		
@@ -48,34 +56,27 @@ public class ForgetPasswordController {
 		return "forget-password-sent";
 	}
 	
-	
-	@GetMapping("/change-password")
-	public String resetPassword(Model model) {
-		model.addAttribute("hcaptchaSiteKey", captchaService.getSiteKey());
-		
-		return "change-password";
-	}
 	@PostMapping
-	public String sendMail(@ModelAttribute("forgetPasswordDto") @Valid ForgetPasswordDto dto, @RequestParam("h-captcha-response") String hCaptchaResponse, Model model, BindingResult bindingResult) {
-		if(!userService.isEmailRegistered(dto.getEmail())) {
-			bindingResult.rejectValue("email", "error.emailNotExist", "Provide email has been never registered!");
-		}
-		
+	public String sendMail(@ModelAttribute("forgetPasswordDto") @Valid ForgetPasswordDto dto, @RequestParam("h-captcha-response") String hCaptchaResponse, Model model, BindingResult bindingResult, HttpServletRequest request) {
+		passwordService.validateDto(dto, bindingResult);
 		if(bindingResult.hasErrors()) {
 			model.addAttribute("forgetPasswordDto", dto);
 			return "forget-password";
 		}
-		//captcha
+		
 		CaptchaResponse captchaResponse = captchaService.validateToken(hCaptchaResponse);
 		if(captchaResponse.success()) {
-			//Send mail with link to /forget-password/change-password?token=${token}
-			//Redirect to mail send
+			User user = passwordService.findByEmail(dto.getEmail());
+			
+			String applicationUrl = passwordService.createApplicationUrl(request);
+			
+			eventPublisher.publishEvent(new ForgetPasswordEvent(user, applicationUrl));
+			
+			return  "redirect:/forget-password/sent";
 		}
 		
 		
-		return  "redirect:/forget-password/sent";
 		
+		return  "forget-password";
 	}
-
-	
 }

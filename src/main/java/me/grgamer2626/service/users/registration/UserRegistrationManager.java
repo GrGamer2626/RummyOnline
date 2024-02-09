@@ -76,9 +76,4 @@ public class UserRegistrationManager implements UserRegistrationService {
 		
 		return userService.save(user);
 	}
-	
-	@Override
-	public String createApplicationUrl(HttpServletRequest request) {
-		return "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
-	}
 }

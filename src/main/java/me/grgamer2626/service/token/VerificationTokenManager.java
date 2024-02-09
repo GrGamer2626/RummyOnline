@@ -29,17 +29,6 @@ public class VerificationTokenManager implements VerificationTokenService {
 	}
 	
 	@Override
-	public UUID createToken() {
-		return UUID.randomUUID();
-	}
-	
-	@Override
-	public UUID createToken(String key, String userEmail) {
-		String tokenBase = key + ":" + userEmail;
-		return UUID.nameUUIDFromBytes(tokenBase.getBytes());
-	}
-	
-	@Override
 	public VerificationToken findByToken(String token) {
 		return tokenRepository.findByToken(token);
 	}
@@ -53,4 +42,11 @@ public class VerificationTokenManager implements VerificationTokenService {
 	public void deleteVerificationToken(VerificationToken token) {
 		tokenRepository.delete(token);
 	}
+	
+	@Override
+	public String createUrl(String applicationUrl, String verificationToken) {
+		return applicationUrl + "/email-verification?token=" + verificationToken;
+	}
+	
+	
 }
