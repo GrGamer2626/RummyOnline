@@ -37,7 +37,7 @@ public class ChangePassword {
 	public ChangePassword(User user, String token) {
 		this.user = user;
 		this.token = token;
-		this.expirationTime = getTicketExpirationTime();
+		this.expirationTime = getTokenExpirationTime();
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -75,7 +75,7 @@ public class ChangePassword {
 		this.user = user;
 	}
 	
-	private Date getTicketExpirationTime() {
+	public Date getTokenExpirationTime() {
 		Instant currentInstant = Instant.now();
 		Instant expirationInstant = currentInstant.plus(EXPIRATION_TIME, ChronoUnit.MINUTES);
 		
