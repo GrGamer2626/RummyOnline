@@ -4,6 +4,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import me.grgamer2626.event.ForgetPasswordEvent;
 import me.grgamer2626.model.users.User;
+import me.grgamer2626.model.users.changePassword.ChangePasswordToken;
 import me.grgamer2626.service.mail.MailService;
 import me.grgamer2626.service.changePassword.ChangePasswordService;
 import org.springframework.context.ApplicationListener;
@@ -27,11 +28,10 @@ public class OnForgetPassword implements ApplicationListener<ForgetPasswordEvent
 	@Override
 	public void onApplicationEvent(ForgetPasswordEvent event) {
 		User user = event.getUser();
-		
 		String token = changePasswordService.createToken().toString();
-		
-		changePasswordService.saveChangePasswordToken(user, token);
-		
+
+		createChangePasswordToken(user, token);
+
 		String url = changePasswordService.createUrl(event.getApplicationUrl(), token);
 		
 		try {
@@ -42,7 +42,24 @@ public class OnForgetPassword implements ApplicationListener<ForgetPasswordEvent
 			e.printStackTrace();
 		}
 	}
-	
+
+	private ChangePasswordToken createChangePasswordToken(User user, String token) {
+		ChangePasswordToken changePassword = changePasswordService.findByUser(user);
+
+		if(changePassword == null) {
+
+			return changePasswordService.saveChangePasswordToken(user, token);
+
+		}else {
+			changePassword.setToken(token);
+			changePassword.setExpirationTime(changePassword.getTokenExpirationTime());
+
+			return  changePasswordService.saveChangePasswordToken(changePassword);
+		}
+	}
+
+
+
 	private String getContent(String url) {
 		return  "<p>We have received a password reset request for your account.</p>" +
 				"<p>To do this, simply click the link below:<br><a href=\"" + url + "\">Change Password</a></p>" +
