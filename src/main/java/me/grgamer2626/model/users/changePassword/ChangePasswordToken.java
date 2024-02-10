@@ -9,7 +9,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "Rummy_Change_Password_Ticket")
-public class ChangePassword {
+public class ChangePasswordToken {
 	
 	private static final int EXPIRATION_TIME = 30;
 	
@@ -25,16 +25,16 @@ public class ChangePassword {
 	@Column(name = "ExpirationTime")
 	private Date expirationTime;
 	
-	public ChangePassword() {}
+	public ChangePasswordToken() {}
 	
-	public ChangePassword(long id, String token, Date expirationTime, User user) {
+	public ChangePasswordToken(long id, String token, Date expirationTime, User user) {
 		this.id = id;
 		this.token = token;
 		this.expirationTime = expirationTime;
 		this.user = user;
 	}
 	
-	public ChangePassword(User user, String token) {
+	public ChangePasswordToken(User user, String token) {
 		this.user = user;
 		this.token = token;
 		this.expirationTime = getTokenExpirationTime();
