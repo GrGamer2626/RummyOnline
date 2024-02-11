@@ -5,6 +5,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import me.grgamer2626.event.ForgetPasswordEvent;
 import me.grgamer2626.model.users.User;
+import me.grgamer2626.model.users.changePassword.ChangePasswordToken;
+import me.grgamer2626.model.users.changePassword.ChangePasswordTokenRepository;
 import me.grgamer2626.service.captcha.CaptchaService;
 import me.grgamer2626.service.changePassword.ForgetPasswordService;
 import me.grgamer2626.service.users.UserService;
@@ -65,18 +67,15 @@ public class ForgetPasswordController {
 		}
 		
 		CaptchaResponse captchaResponse = captchaService.validateToken(hCaptchaResponse);
-		if(captchaResponse.success()) {
-			User user = passwordService.findByEmail(dto.getEmail());
+		if(!captchaResponse.success()) return "forget-password";
+
+		User user = passwordService.findByEmail(dto.getEmail());
+		ChangePasswordToken changePasswordToken = passwordService.getChangePasswordToken(user);
+
+		String applicationUrl = passwordService.createApplicationUrl(request);
 			
-			String applicationUrl = passwordService.createApplicationUrl(request);
-			
-			eventPublisher.publishEvent(new ForgetPasswordEvent(user, applicationUrl));
-			
-			return  "redirect:/forget-password/sent";
-		}
-		
-		
-		
-		return  "forget-password";
+		eventPublisher.publishEvent(new ForgetPasswordEvent(changePasswordToken, applicationUrl));
+
+		return  "redirect:/forget-password/sent";
 	}
 }

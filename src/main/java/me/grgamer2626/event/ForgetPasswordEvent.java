@@ -1,31 +1,32 @@
 package me.grgamer2626.event;
 
 import me.grgamer2626.model.users.User;
+import me.grgamer2626.model.users.changePassword.ChangePasswordToken;
 import org.springframework.context.ApplicationEvent;
 
 public class ForgetPasswordEvent extends ApplicationEvent {
 	
-	private User user;
+	private ChangePasswordToken changePasswordToken;
 	private String applicationUrl;
 	
 	
-	public ForgetPasswordEvent(User user, String applicationUrl) {
-		super(user);
-		this.user = user;
+	public ForgetPasswordEvent(ChangePasswordToken changePasswordToken, String applicationUrl) {
+		super(changePasswordToken);
+		this.changePasswordToken = changePasswordToken;
 		this.applicationUrl = applicationUrl;
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	
-	
-	public User getUser() {
-		return user;
+
+
+	public ChangePasswordToken getChangePasswordToken() {
+		return changePasswordToken;
 	}
-	
-	public void setUser(User user) {
-		this.user = user;
+
+	public void setChangePasswordToken(ChangePasswordToken changePasswordToken) {
+		this.changePasswordToken = changePasswordToken;
 	}
-	
+
 	public String getApplicationUrl() {
 		return applicationUrl;
 	}

@@ -27,12 +27,13 @@ public class OnForgetPassword implements ApplicationListener<ForgetPasswordEvent
 	
 	@Override
 	public void onApplicationEvent(ForgetPasswordEvent event) {
-		User user = event.getUser();
-		String token = changePasswordService.createToken().toString();
+		ChangePasswordToken changePasswordToken = event.getChangePasswordToken();
 
-		createChangePasswordToken(user, token);
+		User user = changePasswordToken.getUser();
 
-		String url = changePasswordService.createUrl(event.getApplicationUrl(), token);
+		String token = changePasswordToken.getToken();
+
+		String url = createUrl(event.getApplicationUrl(), token);
 		
 		try {
 			MimeMessage message = mailService.createMimeMessage(user.getEmail(), "Change Password", getContent(url));
@@ -43,23 +44,6 @@ public class OnForgetPassword implements ApplicationListener<ForgetPasswordEvent
 		}
 	}
 
-	private ChangePasswordToken createChangePasswordToken(User user, String token) {
-		ChangePasswordToken changePassword = changePasswordService.findByUser(user);
-
-		if(changePassword == null) {
-
-			return changePasswordService.saveChangePasswordToken(user, token);
-
-		}else {
-			changePassword.setToken(token);
-			changePassword.setExpirationTime(changePassword.getTokenExpirationTime());
-
-			return  changePasswordService.saveChangePasswordToken(changePassword);
-		}
-	}
-
-
-
 	private String getContent(String url) {
 		return  "<p>We have received a password reset request for your account.</p>" +
 				"<p>To do this, simply click the link below:<br><a href=\"" + url + "\">Change Password</a></p>" +
@@ -68,5 +52,9 @@ public class OnForgetPassword implements ApplicationListener<ForgetPasswordEvent
 				"<p>If you didn't make this request or believe this message was sent in error, please disregard it or contact us.</p>" +
 				"<p>Best regards,</p>" +
 				"<p>Game Fan</p>";
+	}
+
+	private String createUrl(String applicationUrl, String changePasswordToken) {
+		return applicationUrl + "/change-password?token=" + changePasswordToken;
 	}
 }
