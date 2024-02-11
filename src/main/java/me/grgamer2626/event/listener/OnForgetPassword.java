@@ -14,12 +14,10 @@ import java.io.UnsupportedEncodingException;
 
 @Component
 public class OnForgetPassword implements ApplicationListener<ForgetPasswordEvent> {
-	
-	private final ChangePasswordService changePasswordService;
+
 	private final MailService mailService;
 	
-	public OnForgetPassword(ChangePasswordService changePasswordService, MailService mailService) {
-		this.changePasswordService = changePasswordService;
+	public OnForgetPassword(MailService mailService) {
 		this.mailService = mailService;
 	}
 	
